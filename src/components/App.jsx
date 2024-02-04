@@ -10,7 +10,7 @@ function App() {
   const [userData, setUserData] = useState(initialAuthState);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+    const unSubscribe = auth.onAuthStateChanged((firebaseUser) => {
       if (firebaseUser) {
         localStorage.setItem("authenticated", "true");
         setUserData(firebaseUser);
@@ -21,7 +21,7 @@ function App() {
     });
 
     return () => {
-      unsubscribe();
+      unSubscribe();
     };
   }, []);
 

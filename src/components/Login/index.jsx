@@ -17,12 +17,12 @@ function Login({ googleLoginSuccess }) {
   async function handleLogin() {
     try {
       const token = await getAuthToken();
-      const credential = GoogleAuthProvider.credential(null, token);
-      const result = await auth.signInWithCredential(credential);
+      const userCredential = GoogleAuthProvider.credential(null, token);
+      const result = await auth.signInWithCredential(userCredential);
 
       if (result) {
         await axios.post(
-          "http://localhost:3000/login",
+          import.meta.env.VITE_SEVER_URL,
           { user: result.user },
           { withCredentials: true },
         );
