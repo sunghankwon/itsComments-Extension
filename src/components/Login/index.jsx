@@ -22,7 +22,7 @@ function Login({ googleLoginSuccess }) {
 
       if (result) {
         await axios.post(
-          import.meta.env.VITE_SEVER_URL,
+          import.meta.env.VITE_SERVER_URL,
           { user: result.user },
           { withCredentials: true },
         );
