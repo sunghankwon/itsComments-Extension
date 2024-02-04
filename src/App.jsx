@@ -1,8 +1,12 @@
+import Header from "./components/Header/Header";
+import Feed from "./components/Feed";
+
 function App() {
   return (
-    <div className="w-96 h-96 border-2">
-      hello<button className="mt-3.5 border-2">버튼입니다!!</button>
-    </div>
+    <main className="shadow-2xl backdrop-brightness-125 w-80 h-80">
+      <Header />
+      <Feed />
+    </main>
   );
 }
 export default App;
