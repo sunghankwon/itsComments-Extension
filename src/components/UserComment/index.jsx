@@ -7,6 +7,7 @@ function UserComment({ user }) {
       />
       <p>{user.name}</p>
       <p>{user.comment}</p>
+      <p>{user.privacy === "public" ? "공개" : "비공개"}</p>
       <a href={user.imgUrl} target="_black" rel="noopener noreferrer">
         <button className="bg-violet-200 hover:bg-violet-400 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300 rounded-full">
           URL 링크
