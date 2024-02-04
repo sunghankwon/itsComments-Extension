@@ -19,13 +19,14 @@ function Login({ googleLoginSuccess }) {
       const token = await getAuthToken();
       const credential = GoogleAuthProvider.credential(null, token);
       const result = await auth.signInWithCredential(credential);
+
       if (result) {
         await axios.post(
           "http://localhost:3000/login",
           { user: result.user },
           { withCredentials: true },
         );
-        console.log("User signed in:", result.user);
+
         googleLoginSuccess(result.user);
       }
     } catch (error) {
