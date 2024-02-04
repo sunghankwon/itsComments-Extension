@@ -33,6 +33,7 @@ function Login({ googleLoginSuccess }) {
       console.error("Error:", error);
     }
   }
+
   return (
     <div className="flex items-center justify-center">
       <button
