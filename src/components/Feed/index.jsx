@@ -1,29 +1,20 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "react-query";
 
 import UserComment from "../UserComment";
-import axios from "axios";
+import fetchUsersComment from "../../../fetchers/fetchUsersComment";
 
 function Feed() {
-  const [userComments, setUserComment] = useState([]);
+  const { isLoading, error, data } = useQuery("comments", fetchUsersComment);
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(import.meta.env.BACKEND_KEY, {
-          withCredentials: true,
-        });
-
-        setUserComment(response.data);
-      } catch (error) {
-        console.error("Error fetching comments: ", error);
-      }
-    };
-    fetchComments();
-  }, []);
+  if (isLoading) {
+    return <div>Fetching Comments</div>;
+  } else if (error) {
+    return <div>An error occureed: {error.message}</div>;
+  }
 
   return (
     <div className="m-8">
-      {userComments.map((user) => {
+      {data.map((user) => {
         return <UserComment key={user.id} user={user} />;
       })}
     </div>
