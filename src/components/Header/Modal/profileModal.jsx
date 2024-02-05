@@ -1,7 +1,16 @@
 import { useState } from "react";
+import { useMutation } from "react-query";
 
-function ProfileModal({ onClose, onFileChange }) {
+import axios from "axios";
+
+function ProfileModal({ onClose }) {
   const [selectedFile, setSelectedFile] = useState(null);
+
+  const mutation = useMutation({
+    mutationFn: (newProfile) => {
+      return axios.patch(import.meta.env.VITE_BACKEND_PROFILE_KEY, newProfile);
+    },
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -10,7 +19,7 @@ function ProfileModal({ onClose, onFileChange }) {
 
   const handleUpload = () => {
     if (selectedFile) {
-      onFileChange(selectedFile);
+      mutation.mutate(selectedFile);
     } else {
       console.error("No file selected.");
     }
@@ -24,7 +33,7 @@ function ProfileModal({ onClose, onFileChange }) {
           <span className="sr-only">Choose profile photo</span>
           <input
             type="file"
-            accept="image/png, image/jpeg"
+            accept="image/png"
             onChange={handleFileChange}
             className="block w-full text-sm text-slate-500
       file:mr-4 file:py-2 file:px-4
