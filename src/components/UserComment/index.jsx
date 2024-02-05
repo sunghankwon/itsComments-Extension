@@ -5,7 +5,7 @@ function UserComment({ user }) {
         src={user.icon}
         className="h-16 w-16 object-cover rounded-full p-[3px] border-gray-300 hover:bg-slate-200"
       />
-      <p>{user.name}</p>
+      <p>{user.nickname}</p>
       <p>{user.comment}</p>
       <p>{user.privacy === "public" ? "공개" : "비공개"}</p>
       <a href={user.imgUrl} target="_black" rel="noopener noreferrer">

@@ -1,7 +1,10 @@
 import axios from "axios";
 import { auth, GoogleAuthProvider } from "../../utils/firebase";
+import useUserStore from "../../store/userProfile";
 
-function Login({ googleLoginSuccess }) {
+function Login() {
+  const { setUserData } = useUserStore();
+
   function getAuthToken() {
     return new Promise((resolve, reject) => {
       chrome.identity.getAuthToken({ interactive: true }, function (token) {
@@ -17,17 +20,19 @@ function Login({ googleLoginSuccess }) {
   async function handleLogin() {
     try {
       const token = await getAuthToken();
-      const userCredential = GoogleAuthProvider.credential(null, token);
-      const result = await auth.signInWithCredential(userCredential);
+      const credential = GoogleAuthProvider.credential(null, token);
+      const userCredential = await auth.signInWithCredential(credential);
 
-      if (result) {
-        await axios.post(
-          import.meta.env.VITE_SERVER_URL,
-          { user: result.user },
+      if (userCredential) {
+        const res = await axios.post(
+          import.meta.env.VITE_BACKEND_LOGIN,
+          { user: userCredential.user },
           { withCredentials: true },
         );
 
-        googleLoginSuccess(result.user);
+        const user = res.data.user;
+
+        setUserData(user);
       }
     } catch (error) {
       console.error("Error:", error);
