@@ -4,7 +4,7 @@ import { useMutation } from "react-query";
 import axios from "axios";
 
 function ProfileModal({ onClose }) {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
 
   const mutation = useMutation({
     mutationFn: (newProfile) => {
@@ -12,14 +12,14 @@ function ProfileModal({ onClose }) {
     },
   });
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+  const handleFileChange = (event) => {
+    const imageFile = event.target.files[0];
+    setSelectedImageFile(imageFile);
   };
 
   const handleUpload = () => {
-    if (selectedFile) {
-      mutation.mutate(selectedFile);
+    if (selectedImageFile) {
+      mutation.mutate(selectedImageFile);
     } else {
       console.error("No file selected.");
     }
@@ -35,13 +35,14 @@ function ProfileModal({ onClose }) {
             type="file"
             accept="image/png"
             onChange={handleFileChange}
-            className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-violet-50 file:text-violet-700
-      hover:file:bg-violet-100
-    "
+            className="
+              block w-full text-sm text-slate-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-full file:border-0
+              file:text-sm file:font-semibold
+              file:bg-violet-50 file:text-violet-700
+              hover:file:bg-violet-100
+            "
           />
         </label>
         <button
