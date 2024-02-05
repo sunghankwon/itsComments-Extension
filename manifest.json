@@ -3,8 +3,7 @@
   "name": "Your Extension",
   "version": "1.0",
   "description": "Description of your extension",
-  "permissions": ["tabs", "activeTab"],
-  "host_permissions": ["http://*/*", "https://*/*"],
+  "permissions": ["activeTab"],
   "action": {
     "default_popup": "index.html",
     "default_icon": {
