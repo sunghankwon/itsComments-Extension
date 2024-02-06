@@ -23,4 +23,7 @@ module.exports = {
   globals: {
     chrome: true,
   },
+  globals: {
+    chrome: true,
+  },
 };

@@ -3,11 +3,7 @@
   "name": "Your Extension",
   "version": "1.0",
   "description": "Description of your extension",
-  "permissions": [
-    "activeTab",
-    "storage",
-    "identity"
-  ],
+  "permissions": ["activeTab", "storage", "identity"],
   "action": {
     "default_popup": "index.html",
     "default_icon": {
@@ -28,9 +24,6 @@
   },
   "oauth2": {
     "client_id": "75187815994-mmkvhv4n8hgk08ccj579cek7d72pm5ki.apps.googleusercontent.com",
-    "scopes": [
-      "openid",
-      "email"
-    ]
+    "scopes": ["openid", "email"]
   }
 }
