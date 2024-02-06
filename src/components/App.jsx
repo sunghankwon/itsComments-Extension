@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useEffect } from "react";
 import { auth } from "../utils/firebase";
 import axios from "axios";
@@ -21,6 +22,24 @@ function App() {
           { withCredentials: true },
         );
         setUserData(res.data.user);
+=======
+import { useEffect, useState } from "react";
+import Main from "./Main";
+import Login from "./Login";
+import { auth } from "../utils/firebase";
+
+function App() {
+  const initialAuthState =
+    localStorage.getItem("authenticated") === "true" ? {} : null;
+
+  const [userData, setUserData] = useState(initialAuthState);
+
+  useEffect(() => {
+    const unSubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      if (firebaseUser) {
+        localStorage.setItem("authenticated", "true");
+        setUserData(firebaseUser);
+>>>>>>> main
       } else {
         localStorage.setItem("authenticated", "false");
         setUserData(null);
@@ -30,6 +49,7 @@ function App() {
     return () => {
       unSubscribe();
     };
+<<<<<<< HEAD
   }, [setUserData]);
 
   return (
@@ -43,6 +63,18 @@ function App() {
         <Login />
       )}
     </main>
+=======
+  }, []);
+
+  return (
+    <div className="w-80 h-96 border-2">
+      {userData ? (
+        <Main user={userData} />
+      ) : (
+        <Login googleLoginSuccess={setUserData} />
+      )}
+    </div>
+>>>>>>> main
   );
 }
 
