@@ -1,19 +1,26 @@
-import { useEffect, useState } from "react";
-import Main from "./Main";
-import Login from "./Login";
+import { useEffect } from "react";
 import { auth } from "../utils/firebase";
+import axios from "axios";
+
+import Login from "./Login";
+import Header from "./Header/Header";
+import Feed from "./Feed";
+
+import useUserStore from "../store/userProfile";
 
 function App() {
-  const initialAuthState =
-    localStorage.getItem("authenticated") === "true" ? {} : null;
-
-  const [userData, setUserData] = useState(initialAuthState);
+  const { userData, setUserData } = useUserStore();
 
   useEffect(() => {
-    const unSubscribe = auth.onAuthStateChanged((firebaseUser) => {
+    const unSubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
         localStorage.setItem("authenticated", "true");
-        setUserData(firebaseUser);
+        const res = await axios.post(
+          import.meta.env.VITE_BACKEND_LOGIN,
+          { user: firebaseUser },
+          { withCredentials: true },
+        );
+        setUserData(res.data.user);
       } else {
         localStorage.setItem("authenticated", "false");
         setUserData(null);
@@ -23,16 +30,19 @@ function App() {
     return () => {
       unSubscribe();
     };
-  }, []);
+  }, [setUserData]);
 
   return (
-    <div className="w-80 h-96 border-2">
+    <main className="w-80 h-80 shadow-2xl backdrop-brightness-125">
       {userData ? (
-        <Main user={userData} />
+        <>
+          <Header />
+          <Feed />
+        </>
       ) : (
-        <Login googleLoginSuccess={setUserData} />
+        <Login />
       )}
-    </div>
+    </main>
   );
 }
 

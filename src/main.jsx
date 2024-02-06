@@ -1,12 +1,16 @@
-// @jsxImportSource react
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+import App from "./components/App";
 import "./index.css";
 
-console.log("main.js is loaded");
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </React.StrictMode>,
 );
