@@ -16,15 +16,13 @@ function App() {
   useEffect(() => {
     const unSubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
-        console.log("이건오냐??");
         const authToken = await firebaseUser.getIdToken(true);
-        console.log(authToken);
         const res = await axios.post(
           import.meta.env.VITE_SERVER_URL,
           { user: firebaseUser },
           { withCredentials: true },
         );
-        console.log(res.data);
+
         setAuthToken(authToken);
         setUserData(res.data.user);
       } else {
