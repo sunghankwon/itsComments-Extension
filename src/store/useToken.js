@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
-const useTokenStore = create((set) => ({
+const useAuthTokenStore = create((set) => ({
   authToken: null,
   setAuthToken: (data) => set(() => ({ authToken: data })),
 }));
 
-export default useTokenStore;
+export default useAuthTokenStore;

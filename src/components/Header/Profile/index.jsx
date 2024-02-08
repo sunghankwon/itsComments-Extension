@@ -3,12 +3,12 @@ import { createPortal } from "react-dom";
 
 import ProfileModal from "../Modal/profileModal";
 import useUserStore from "../../../store/userProfile";
-import useTokenStore from "../../../store/useToken";
+import useAuthTokenStore from "../../../store/useToken";
 
 function Profile() {
   const [isModalOpen, setModalOpen] = useState(false);
   const { userData } = useUserStore();
-  const { authToken } = useTokenStore();
+  const { authToken } = useAuthTokenStore();
 
   function openWebPage() {
     if (authToken) {

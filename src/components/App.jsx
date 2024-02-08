@@ -7,24 +7,28 @@ import Header from "./Header/Header";
 import Feed from "./Feed";
 
 import useUserStore from "../store/userProfile";
-import useTokenStore from "../store/useToken";
+import useAuthTokenStore from "../store/useToken";
 
 function App() {
   const { userData, setUserData } = useUserStore();
-  const { setAuthToken } = useTokenStore();
+  const { setAuthToken } = useAuthTokenStore();
 
   useEffect(() => {
-    const unSubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-      if (firebaseUser) {
-        const authToken = await firebaseUser.getIdToken(true);
-        const res = await axios.post(
-          import.meta.env.VITE_SERVER_URL,
-          { user: firebaseUser },
-          { withCredentials: true },
-        );
+    const unSubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const authToken = await user.getIdToken(true);
+          const res = await axios.post(
+            import.meta.env.VITE_SERVER_URL,
+            { user },
+            { withCredentials: true },
+          );
 
-        setAuthToken(authToken);
-        setUserData(res.data.user);
+          setAuthToken(authToken);
+          setUserData(res.data.user);
+        } catch (error) {
+          console.log("Login error:", error);
+        }
       } else {
         setUserData(null);
       }
