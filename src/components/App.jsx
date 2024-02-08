@@ -7,22 +7,27 @@ import Header from "./Header/Header";
 import Feed from "./Feed";
 
 import useUserStore from "../store/userProfile";
+import useTokenStore from "../store/useToken";
 
 function App() {
   const { userData, setUserData } = useUserStore();
+  const { setAuthToken } = useTokenStore();
 
   useEffect(() => {
     const unSubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
-        localStorage.setItem("authenticated", "true");
+        console.log("이건오냐??");
+        const authToken = await firebaseUser.getIdToken(true);
+        console.log(authToken);
         const res = await axios.post(
-          import.meta.env.VITE_BACKEND_LOGIN,
+          import.meta.env.VITE_SERVER_URL,
           { user: firebaseUser },
           { withCredentials: true },
         );
+        console.log(res.data);
+        setAuthToken(authToken);
         setUserData(res.data.user);
       } else {
-        localStorage.setItem("authenticated", "false");
         setUserData(null);
       }
     });
