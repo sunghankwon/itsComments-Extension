@@ -40,7 +40,7 @@ function App() {
   }, [setUserData]);
 
   return (
-    <main className="w-80 h-80 shadow-2xl backdrop-brightness-125">
+    <main className="w-96 h-96">
       {userData ? (
         <>
           <Header />
