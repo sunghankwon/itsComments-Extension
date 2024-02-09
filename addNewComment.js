@@ -46,6 +46,44 @@ function openModal(x, y) {
   return modal;
 }
 
+function handleMouseMove(event) {
+  const x = event.pageX;
+  const y = event.pageY;
+
+  const cursor = document.createElement("div");
+
+  cursor.className = "custom-cursor";
+  cursor.style.cursor = "none";
+  cursor.style.position = "absolute";
+  cursor.style.width = "30px";
+  cursor.style.height = "30px";
+  cursor.style.borderRadius = "50%";
+  cursor.style.backgroundColor = "blue";
+  cursor.style.left = `${x}px`;
+  cursor.style.top = `${y}px`;
+  cursor.style.zIndex = "1000";
+
+  const isOverModal = document.querySelector(".newComment:hover");
+
+  if (!isOverModal) {
+    const existingCursor = document.querySelector(".custom-cursor");
+
+    if (existingCursor) {
+      existingCursor.remove();
+    }
+
+    document.body.appendChild(cursor);
+    document.body.style.cursor = "none";
+  } else {
+    const existingCursor = document.querySelector(".custom-cursor");
+    if (existingCursor) {
+      existingCursor.remove();
+    }
+
+    document.body.style.cursor = "auto";
+  }
+}
+
 document.addEventListener(
   "click",
   function (event) {
@@ -56,3 +94,5 @@ document.addEventListener(
   },
   { once: true },
 );
+
+document.addEventListener("mousemove", handleMouseMove);
