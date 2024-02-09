@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     copyAssets({
-      assets: ["./icons", "./manifest.json"],
+      assets: ["./icons", "./manifest.json", "./service_worker.js"],
     }),
   ],
   build: {
