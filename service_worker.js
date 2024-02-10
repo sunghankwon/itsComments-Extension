@@ -13,6 +13,17 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     });
   } else if (message.action === "submitForm") {
     try {
+      const screenshot = await new Promise((resolve) => {
+        chrome.tabs.captureVisibleTab(
+          { format: "png", quality: 90 },
+          (imageUrl) => {
+            resolve(imageUrl);
+          },
+        );
+      });
+
+      const encodeScreenshot = btoa(screenshot);
+
       const { currentUrl, userData } = await new Promise((resolve) => {
         chrome.storage.local.get(["currentUrl", "userData"], (result) => {
           resolve(result);
@@ -25,6 +36,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         postDate: message.data.nowDate,
         postUrl: currentUrl,
         postCoordinate: message.data.postCoordinate,
+        screenshot: encodeScreenshot,
         allowPublic: message.data.selectValue,
         publicUsers: [],
         recipientEmail: message.data.recipientEmail,
