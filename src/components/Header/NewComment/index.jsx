@@ -5,7 +5,7 @@ function NewComment() {
       const tabId = activeTab.id;
 
       chrome.runtime.sendMessage({
-        action: "addNumComment",
+        action: "addNewComment",
         tabId,
       });
     });
