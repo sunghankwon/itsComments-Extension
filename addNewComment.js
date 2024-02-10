@@ -6,22 +6,45 @@ function removeElementsByClass(className) {
   }
 }
 
+function createCustomCursor(x, y) {
+  const cursor = document.createElement("div");
+  cursor.className = "custom-cursor";
+
+  cursor.style.cursor = "none";
+
+  cursor.style.position = "absolute";
+  cursor.style.left = `${x}px`;
+  cursor.style.top = `${y}px`;
+  cursor.style.width = "30px";
+  cursor.style.height = "30px";
+  cursor.style.zIndex = "1000";
+
+  cursor.style.backgroundColor = "blue";
+  cursor.style.borderRadius = "50%";
+
+  return cursor;
+}
+
+function setModalStyle(modal, x, y) {
+  modal.className = "newComment";
+
+  modal.style.position = "absolute";
+  modal.style.left = `${x}px`;
+  modal.style.top = `${y}px`;
+  modal.style.width = "300px";
+  modal.style.height = "200px";
+  modal.style.zIndex = "1000";
+
+  modal.style.background = "white";
+  modal.style.border = "1px solid black";
+  modal.style.borderRadius = "10px";
+}
+
 function handleMouseMove(event) {
   const x = event.pageX;
   const y = event.pageY;
 
-  const cursor = document.createElement("div");
-
-  cursor.className = "custom-cursor";
-  cursor.style.cursor = "none";
-  cursor.style.position = "absolute";
-  cursor.style.width = "30px";
-  cursor.style.height = "30px";
-  cursor.style.borderRadius = "50%";
-  cursor.style.backgroundColor = "blue";
-  cursor.style.left = `${x}px`;
-  cursor.style.top = `${y}px`;
-  cursor.style.zIndex = "1000";
+  const cursor = createCustomCursor(x, y);
 
   const isOverModal = document.querySelector(".newComment:hover");
 
@@ -48,19 +71,36 @@ function openModal(x, y) {
   removeElementsByClass("newComment");
 
   const modal = document.createElement("form");
-
   modal.setAttribute("name", "comment");
 
-  const input = document.createElement("input");
+  const textarea = document.createElement("textarea");
   const emailInput = document.createElement("input");
+  const friendsDropdown = document.createElement("select");
 
-  const select = document.createElement("select");
+  textarea.addEventListener("input", function (event) {
+    const inputValue = event.target.value;
+
+    if (inputValue.includes("@")) {
+      friendsDropdown.style.display = "block";
+    } else {
+      friendsDropdown.style.display = "none";
+    }
+  });
+
+  const allowPublic = document.createElement("select");
 
   const option1 = document.createElement("option");
   const option2 = document.createElement("option");
 
+  option1.value = "공개";
+  option1.text = "공개";
+  option2.value = "비공개";
+  option2.text = "비공개";
+
+  allowPublic.appendChild(option1);
+  allowPublic.appendChild(option2);
+
   const addEmailButton = document.createElement("button");
-  const submitButton = document.createElement("button");
 
   emailInput.setAttribute("type", "email");
   emailInput.setAttribute("name", "email");
@@ -79,21 +119,14 @@ function openModal(x, y) {
     modal.insertBefore(newEmailInput, emailInput.nextSibling);
   });
 
+  const submitButton = document.createElement("button");
   submitButton.textContent = "전송";
 
-  option1.value = "공개";
-  option1.text = "공개";
-  option2.value = "비공개";
-  option2.text = "비공개";
-
-  select.appendChild(option1);
-  select.appendChild(option2);
-
-  modal.appendChild(input);
+  modal.appendChild(textarea);
   modal.appendChild(emailInput);
   modal.appendChild(addEmailButton);
   modal.appendChild(submitButton);
-  modal.appendChild(select);
+  modal.appendChild(allowPublic);
 
   const closeButton = document.createElement("button");
   closeButton.textContent = "닫기";
@@ -106,17 +139,7 @@ function openModal(x, y) {
   });
 
   modal.appendChild(closeButton);
-
-  modal.className = "newComment";
-  modal.style.position = "absolute";
-  modal.style.left = `${x}px`;
-  modal.style.top = `${y}px`;
-  modal.style.width = "300px";
-  modal.style.height = "200px";
-  modal.style.background = "white";
-  modal.style.border = "1px solid black";
-  modal.style.borderRadius = "10px";
-  modal.style.zIndex = "1000";
+  setModalStyle(modal, x, y);
 
   document.body.appendChild(modal);
 
