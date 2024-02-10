@@ -141,7 +141,7 @@ function handleSubmit(event) {
   event.preventDefault();
 
   const textareaElement = event.target.querySelector("textarea");
-  const selectValue = event.target.querySelector("select");
+  const allowPublic = event.target.querySelector("select");
   const emailElements = event.target.querySelectorAll("input[name='email']");
   const recipientEmail = Array.from(emailElements).map(
     (emailInput) => emailInput.value,
@@ -156,12 +156,12 @@ function handleSubmit(event) {
     y,
   };
 
-  let allowPublic;
+  let selectValue;
 
-  if (selectValue.value === "공개") {
-    allowPublic = true;
+  if (allowPublic.value === "공개") {
+    selectValue = true;
   } else {
-    allowPublic = false;
+    selectValue = false;
   }
 
   if (textareaElement.value.length > 200) {
@@ -177,7 +177,7 @@ function handleSubmit(event) {
       action: "submitForm",
       data: {
         inputValue: textareaElement.value,
-        selectValue: allowPublic,
+        allowPublic: selectValue,
         recipientEmail,
         postCoordinate,
         nowDate,
