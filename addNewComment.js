@@ -164,6 +164,12 @@ function handleSubmit(event) {
     allowPublic = false;
   }
 
+  if (textareaElement.value.length > 200) {
+    return alert("200자 이하로 작성해주세요!");
+  } else if (textareaElement.value.length < 1) {
+    return alert("1글자 이상 작성해주세요!");
+  }
+
   const nowDate = new Date();
 
   chrome.runtime.sendMessage(
