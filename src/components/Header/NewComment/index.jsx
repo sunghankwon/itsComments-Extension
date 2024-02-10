@@ -1,12 +1,19 @@
+import useUserStore from "../../../store/userProfile";
+
 function NewComment() {
+  const { userData } = useUserStore();
+
   const handleOnClick = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];
       const tabId = activeTab.id;
+      const currentUrl = activeTab.url;
 
       chrome.runtime.sendMessage({
         action: "addNewComment",
         tabId,
+        currentUrl,
+        userData,
       });
     });
   };

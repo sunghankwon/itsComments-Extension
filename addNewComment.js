@@ -72,21 +72,10 @@ function openModal(x, y) {
 
   const modal = document.createElement("form");
   modal.setAttribute("name", "comment");
+  modal.addEventListener("submit", handleSubmit);
 
   const textarea = document.createElement("textarea");
   const emailInput = document.createElement("input");
-  const friendsDropdown = document.createElement("select");
-
-  textarea.addEventListener("input", function (event) {
-    const inputValue = event.target.value;
-
-    if (inputValue.includes("@")) {
-      friendsDropdown.style.display = "block";
-    } else {
-      friendsDropdown.style.display = "none";
-    }
-  });
-
   const allowPublic = document.createElement("select");
 
   const option1 = document.createElement("option");
@@ -146,6 +135,61 @@ function openModal(x, y) {
   modal.focus();
 
   return modal;
+}
+
+function handleSubmit(event) {
+  event.preventDefault();
+
+  const textareaElement = event.target.querySelector("textarea");
+  const allowPublic = event.target.querySelector("select");
+  const emailElements = event.target.querySelectorAll("input[name='email']");
+  const recipientEmail = Array.from(emailElements).map(
+    (emailInput) => emailInput.value,
+  );
+
+  const formElement = document.getElementsByClassName("newComment");
+  const x = formElement[0].style.left;
+  const y = formElement[0].style.top;
+
+  const postCoordinate = {
+    x,
+    y,
+  };
+
+  let selectValue;
+
+  if (allowPublic.value === "공개") {
+    selectValue = true;
+  } else {
+    selectValue = false;
+  }
+
+  if (textareaElement.value.length > 200) {
+    return alert("200자 이하로 작성해주세요!");
+  } else if (textareaElement.value.length < 1) {
+    return alert("1글자 이상 작성해주세요!");
+  }
+
+  const nowDate = new Date();
+
+  chrome.runtime.sendMessage(
+    {
+      action: "submitForm",
+      data: {
+        inputValue: textareaElement.value,
+        allowPublic: selectValue,
+        recipientEmail,
+        postCoordinate,
+        nowDate,
+      },
+    },
+    function (response) {
+      console.log(response);
+    },
+  );
+
+  document.removeEventListener("mousemove", handleMouseMove);
+  removeElementsByClass("newComment");
 }
 
 document.addEventListener(
