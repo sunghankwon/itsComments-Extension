@@ -13,10 +13,11 @@ function Feed() {
   }
 
   return (
-    <div className="m-8">
+    <div className="m-8 shadow-2xl backdrop-brightness-125">
       {data.map((user) => {
         return <UserComment key={user.id} user={user} />;
       })}
+      안녕
     </div>
   );
 }
