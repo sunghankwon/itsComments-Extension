@@ -6,6 +6,23 @@ function removeElementsByClass(className) {
   }
 }
 
+function displayErrorMessage(parentElement, message) {
+  const errorMessage = document.createElement("div");
+
+  errorMessage.className = "error-message";
+  errorMessage.textContent = message;
+
+  errorMessage.style.color = "red";
+  errorMessage.style.fontSize = "14px";
+  errorMessage.style.marginTop = "8px";
+
+  parentElement.appendChild(errorMessage);
+
+  setTimeout(() => {
+    errorMessage.remove();
+  }, 2000);
+}
+
 function setFriendDropdownStyle() {
   const friendsDropdown = document.createElement("select");
 
@@ -108,7 +125,7 @@ function openModal(x, y, userFriendsList, userIcon) {
   const modal = document.createElement("form");
   modal.setAttribute("name", "comment");
   modal.addEventListener("submit", function (event) {
-    handleSubmit(event, publicUsers);
+    handleSubmit(event, publicUsers, modal);
   });
 
   const friendsDropdown = setFriendDropdownStyle();
@@ -144,7 +161,7 @@ function openModal(x, y, userFriendsList, userIcon) {
     textarea.value = textarea.value.replace("@", "");
 
     if (publicUsers.includes(selectedFriend)) {
-      alert("이미 추가된 사람입니다!");
+      displayErrorMessage(modal, "이미 추가된 사람입니다!");
       return;
     }
 
@@ -213,10 +230,10 @@ function openModal(x, y, userFriendsList, userIcon) {
   return modal;
 }
 
-function handleSubmit(event, publicUsers) {
+function handleSubmit(event, publicUsers, modal) {
   event.preventDefault();
 
-  const shadowHostElement = document.body.getElementsByClassName("shadowHost");
+  const shadowHostElements = document.body.getElementsByClassName("shadowHost");
   const textareaElement = event.target.querySelector("textarea");
   const allowPublic = event.target.querySelector("select");
   const emailElements = event.target.querySelectorAll("input[name='email']");
@@ -224,8 +241,10 @@ function handleSubmit(event, publicUsers) {
     (emailInput) => emailInput.value,
   );
 
-  const x = shadowHostElement[0].style.left;
-  const y = shadowHostElement[0].style.top;
+  const shadowHostElement = shadowHostElements[0];
+
+  const x = shadowHostElement.style.left;
+  const y = shadowHostElement.style.top;
 
   const postCoordinate = {
     x,
@@ -241,9 +260,11 @@ function handleSubmit(event, publicUsers) {
   }
 
   if (textareaElement.value.length > 200) {
-    return alert("200자 이하로 작성해주세요!");
+    displayErrorMessage(modal, "200자 이하로 작성해주세요");
+    return;
   } else if (textareaElement.value.length < 1) {
-    return alert("1글자 이상 작성해주세요!");
+    displayErrorMessage(modal, "1글자 이상 작성해주세요");
+    return;
   }
 
   const nowDate = new Date();
@@ -277,8 +298,6 @@ document.addEventListener(
       const userIcon = result.userIcon;
       const offsetX = event.pageX;
       const offsetY = event.pageY;
-
-      console.log(userFriendsList);
 
       openModal(offsetX, offsetY, userFriendsList, userIcon);
     });
