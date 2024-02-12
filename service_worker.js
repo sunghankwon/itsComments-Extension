@@ -1,14 +1,20 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "openWebPage") {
-    handleOpenWebPage(message);
-  } else if (message.action === "addNewComment") {
-    handleAddNewComment(message);
-  } else if (message.action === "submitForm") {
-    handleSubmitForm(message, sendResponse);
-  } else if (message.action === "pageUrlUpdated") {
-    handlePageUrlUpdated(message, sendResponse);
-  } else if (message.action === "updateLoginUser") {
-    handleUpdateLoginUser(message);
+  switch (message.action) {
+    case "openWebPage":
+      handleOpenWebPage(message);
+      break;
+    case "addNewComment":
+      handleAddNewComment(message);
+      break;
+    case "submitForm":
+      handleSubmitForm(message, sendResponse);
+      break;
+    case "pageUrlUpdated":
+      handlePageUrlUpdated(message, sendResponse);
+      break;
+    case "updateLoginUser":
+      handleUpdateLoginUser(message);
+      break;
   }
 });
 
@@ -25,8 +31,15 @@ async function handleOpenWebPage(message) {
 async function handleAddNewComment(message) {
   const currentUrl = message.currentUrl;
   const userData = message.userData;
+  const userFriends = userData.friends;
+  const userIcon = userData.icon;
 
-  await chrome.storage.local.set({ currentUrl, userData });
+  await chrome.storage.local.set({
+    currentUrl,
+    userData,
+    userFriends,
+    userIcon,
+  });
 
   chrome.scripting.executeScript({
     target: { tabId: message.tabId },
@@ -61,7 +74,7 @@ async function handleSubmitForm(message, sendResponse) {
       postCoordinate: message.data.postCoordinate,
       screenshot: encodeScreenshot,
       allowPublic: message.data.allowPublic,
-      publicUsers: [],
+      publicUsers: message.data.publicUsers,
       recipientEmail: message.data.recipientEmail,
     };
 
