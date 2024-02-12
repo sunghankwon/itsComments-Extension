@@ -6,6 +6,19 @@ function removeElementsByClass(className) {
   }
 }
 
+function setFriendDropdownStyle() {
+  const friendsDropdown = document.createElement("select");
+
+  friendsDropdown.style.width = "100%";
+  friendsDropdown.style.padding = "8px";
+  friendsDropdown.style.border = "1px solid #ccc";
+  friendsDropdown.style.borderRadius = "5px";
+  friendsDropdown.style.fontFamily = "Arial, sans-serif";
+  friendsDropdown.style.fontSize = "14px";
+
+  return friendsDropdown;
+}
+
 function createCustomCursor(x, y) {
   const cursor = document.createElement("div");
   cursor.className = "custom-cursor";
@@ -25,7 +38,7 @@ function createCustomCursor(x, y) {
   return cursor;
 }
 
-function setModalStyle(modal, x, y) {
+function setModalStyle(shadowHost, modal, x, y) {
   modal.className = "newComment";
 
   modal.style.position = "absolute";
@@ -38,6 +51,24 @@ function setModalStyle(modal, x, y) {
   modal.style.background = "white";
   modal.style.border = "1px solid black";
   modal.style.borderRadius = "10px";
+
+  shadowHost.style.left = `${x}px`;
+  shadowHost.style.top = `${y}px`;
+}
+
+function setUserIcon(userIcon) {
+  const userIconImg = document.createElement("img");
+
+  userIconImg.src = userIcon;
+  userIconImg.style.width = "50px";
+  userIconImg.style.height = "50px";
+  userIconImg.style.position = "absolute";
+  userIconImg.style.top = "0";
+  userIconImg.style.left = "0";
+
+  userIconImg.style.borderRadius = "50%";
+
+  return userIconImg;
 }
 
 function handleMouseMove(event) {
@@ -46,7 +77,7 @@ function handleMouseMove(event) {
 
   const cursor = createCustomCursor(x, y);
 
-  const isOverModal = document.querySelector(".newComment:hover");
+  const isOverModal = document.querySelector(".shadowHost:hover");
 
   if (!isOverModal) {
     const existingCursor = document.querySelector(".custom-cursor");
@@ -67,12 +98,20 @@ function handleMouseMove(event) {
   }
 }
 
-function openModal(x, y) {
-  removeElementsByClass("newComment");
+function openModal(x, y, userFriendsList, userIcon) {
+  removeElementsByClass("shadowHost");
+
+  const shadowHost = document.createElement("div");
+  const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+  shadowHost.className = "shadowHost";
 
   const modal = document.createElement("form");
   modal.setAttribute("name", "comment");
-  modal.addEventListener("submit", handleSubmit);
+  modal.addEventListener("submit", function (event) {
+    handleSubmit(event, publicUsers);
+  });
+
+  const friendsDropdown = setFriendDropdownStyle();
 
   const textarea = document.createElement("textarea");
   const emailInput = document.createElement("input");
@@ -88,6 +127,38 @@ function openModal(x, y) {
 
   allowPublic.appendChild(option1);
   allowPublic.appendChild(option2);
+
+  const publicUsers = [];
+
+  userFriendsList.forEach((friend) => {
+    const friendOption = document.createElement("option");
+
+    friendOption.value = `${friend.nickname}`;
+    friendOption.text = friend.nickname;
+    friendsDropdown.appendChild(friendOption);
+    friendsDropdown.style.display = "none";
+  });
+
+  friendsDropdown.addEventListener("click", function (event) {
+    const selectedFriend = event.target.value;
+    textarea.value = textarea.value.replace("@", "");
+
+    if (publicUsers.includes(selectedFriend)) {
+      alert("이미 추가된 사람입니다!");
+      return;
+    }
+
+    publicUsers.push(selectedFriend);
+    friendsDropdown.style.display = "none";
+  });
+
+  textarea.addEventListener("input", function (event) {
+    const textareaValue = event.target.value;
+
+    friendsDropdown.style.display = textareaValue.includes("@")
+      ? "block"
+      : "none";
+  });
 
   const addEmailButton = document.createElement("button");
 
@@ -111,11 +182,15 @@ function openModal(x, y) {
   const submitButton = document.createElement("button");
   submitButton.textContent = "전송";
 
+  const userIconImg = setUserIcon(userIcon);
+
   modal.appendChild(textarea);
   modal.appendChild(emailInput);
   modal.appendChild(addEmailButton);
   modal.appendChild(submitButton);
   modal.appendChild(allowPublic);
+  modal.appendChild(friendsDropdown);
+  modal.appendChild(userIconImg);
 
   const closeButton = document.createElement("button");
   closeButton.textContent = "닫기";
@@ -123,23 +198,25 @@ function openModal(x, y) {
   closeButton.addEventListener("click", function (event) {
     event.preventDefault();
 
-    removeElementsByClass("newComment");
+    removeElementsByClass("shadowHost");
     document.removeEventListener("mousemove", handleMouseMove);
   });
 
+  shadowRoot.appendChild(modal);
   modal.appendChild(closeButton);
-  setModalStyle(modal, x, y);
+  setModalStyle(shadowHost, modal, x, y);
 
-  document.body.appendChild(modal);
+  document.body.appendChild(shadowHost);
 
   modal.focus();
 
   return modal;
 }
 
-function handleSubmit(event) {
+function handleSubmit(event, publicUsers) {
   event.preventDefault();
 
+  const shadowHostElement = document.body.getElementsByClassName("shadowHost");
   const textareaElement = event.target.querySelector("textarea");
   const allowPublic = event.target.querySelector("select");
   const emailElements = event.target.querySelectorAll("input[name='email']");
@@ -147,9 +224,8 @@ function handleSubmit(event) {
     (emailInput) => emailInput.value,
   );
 
-  const formElement = document.getElementsByClassName("newComment");
-  const x = formElement[0].style.left;
-  const y = formElement[0].style.top;
+  const x = shadowHostElement[0].style.left;
+  const y = shadowHostElement[0].style.top;
 
   const postCoordinate = {
     x,
@@ -180,6 +256,7 @@ function handleSubmit(event) {
         allowPublic: selectValue,
         recipientEmail,
         postCoordinate,
+        publicUsers,
         nowDate,
       },
     },
@@ -189,16 +266,22 @@ function handleSubmit(event) {
   );
 
   document.removeEventListener("mousemove", handleMouseMove);
-  removeElementsByClass("newComment");
+  removeElementsByClass("shadowHost");
 }
 
 document.addEventListener(
   "click",
   function (event) {
-    const offsetX = event.pageX;
-    const offsetY = event.pageY;
+    chrome.storage.local.get(["userFriends", "userIcon"], (result) => {
+      const userFriendsList = result.userFriends;
+      const userIcon = result.userIcon;
+      const offsetX = event.pageX;
+      const offsetY = event.pageY;
 
-    openModal(offsetX, offsetY);
+      console.log(userFriendsList);
+
+      openModal(offsetX, offsetY, userFriendsList, userIcon);
+    });
   },
   { once: true },
 );
