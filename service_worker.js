@@ -104,5 +104,22 @@ function handlePageUrlUpdated(message) {
   const userId = chrome.runtime.loginUser;
   const pageUrl = message.url;
 
-  sendUserDataToServer(userId, pageUrl);
+  sendUserDataToServer(userId, pageUrl)
+    .then((responseData) => {
+      const responseComments = responseData.pageComments;
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        const activeTab = tabs[0];
+        const message = {
+          action: "sendDataToDisplayComments",
+          data: responseComments,
+        };
+
+        chrome.tabs.sendMessage(activeTab.id, message, (response) => {
+          console.log("Response from content script:", response);
+        });
+      });
+    })
+    .catch((error) => {
+      console.error("Error occurred during data transmission:", error);
+    });
 }
