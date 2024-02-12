@@ -5,8 +5,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     handleAddNewComment(message);
   } else if (message.action === "submitForm") {
     handleSubmitForm(message, sendResponse);
+  } else if (message.action === "pageUrlUpdated") {
+    handlePageUrlUpdated(message, sendResponse);
+  } else if (message.action === "updateLoginUser") {
+    handleUpdateLoginUser(message);
   }
 });
+
+async function handleUpdateLoginUser(message) {
+  const loginUser = message.user;
+
+  await chrome.storage.local.set({ loginUser });
+}
 
 async function handleOpenWebPage(message) {
   await chrome.tabs.create({ url: `localhost:5173?token=${message.token}` });
@@ -73,4 +83,54 @@ async function handleSubmitForm(message, sendResponse) {
   }
 
   sendResponse("addNewComment has been arrived");
+}
+
+async function sendUserDataToServer(userId, pageUrl) {
+  try {
+    const serverEndpoint = `http://localhost:3000/location?userId=${encodeURIComponent(userId)}&pageUrl=${encodeURIComponent(pageUrl)}`;
+
+    const response = await fetch(serverEndpoint, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Error occurred during data transmission to the server:",
+      error,
+    );
+  }
+}
+
+async function handlePageUrlUpdated(message) {
+  try {
+    const pageUrl = message.url;
+    const userId = await new Promise((resolve) => {
+      chrome.storage.local.get(["loginUser"], (result) => {
+        resolve(result.loginUser);
+      });
+    });
+
+    const responseData = await sendUserDataToServer(userId, pageUrl);
+
+    const responseComments = responseData.pageComments;
+
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const activeTab = tabs[0];
+      const message = {
+        action: "sendDataToDisplayComments",
+        data: responseComments,
+      };
+
+      chrome.tabs.sendMessage(activeTab.id, message, (response) => {
+        console.log("Response from content script:", response);
+      });
+    });
+  } catch (error) {
+    console.error("Error occurred during data transmission:", error);
+  }
 }

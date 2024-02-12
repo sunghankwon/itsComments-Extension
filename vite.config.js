@@ -11,6 +11,7 @@ export default defineConfig({
         "./manifest.json",
         "./service_worker.js",
         "./addNewComment.js",
+        "./displayComments.js",
       ],
     }),
   ],

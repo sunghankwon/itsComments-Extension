@@ -26,6 +26,11 @@ function App() {
 
           setAuthToken(authToken);
           setUserData(res.data.user);
+
+          chrome.runtime.sendMessage({
+            action: "updateLoginUser",
+            user: res.data.user._id,
+          });
         } catch (error) {
           console.log("Login error:", error);
         }
