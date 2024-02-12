@@ -13,7 +13,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function handleUpdateLoginUser(message) {
-  chrome.runtime.loginUser = message.user;
+  const loginUser = message.user;
+
+  await chrome.storage.local.set({ loginUser });
 }
 
 async function handleOpenWebPage(message) {
@@ -106,8 +108,12 @@ async function sendUserDataToServer(userId, pageUrl) {
 
 async function handlePageUrlUpdated(message) {
   try {
-    const userId = chrome.runtime.loginUser;
     const pageUrl = message.url;
+    const userId = await new Promise((resolve) => {
+      chrome.storage.local.get(["loginUser"], (result) => {
+        resolve(result.loginUser);
+      });
+    });
 
     const responseData = await sendUserDataToServer(userId, pageUrl);
 
