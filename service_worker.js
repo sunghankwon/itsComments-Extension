@@ -5,6 +5,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     handleAddNewComment(message);
   } else if (message.action === "submitForm") {
     handleSubmitForm(message, sendResponse);
+  } else if (message.action === "pageUrlUpdated") {
+    handlePageUrlUpdated(message, sendResponse);
+  } else if (message.action === "updateLoginUser") {
+    chrome.runtime.loginUser = message.user;
   }
 });
 
@@ -73,4 +77,32 @@ async function handleSubmitForm(message, sendResponse) {
   }
 
   sendResponse("addNewComment has been arrived");
+}
+
+async function sendUserDataToServer(userId, pageUrl) {
+  const serverEndpoint = `http://localhost:3000/location?userId=${encodeURIComponent(userId)}&pageUrl=${encodeURIComponent(pageUrl)}`;
+
+  return fetch(serverEndpoint, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((responseData) => {
+      return responseData;
+    })
+    .catch((error) => {
+      console.error(
+        "Error occurred during data transmission to the server:",
+        error,
+      );
+    });
+}
+
+function handlePageUrlUpdated(message) {
+  const userId = chrome.runtime.loginUser;
+  const pageUrl = message.url;
+
+  sendUserDataToServer(userId, pageUrl);
 }
