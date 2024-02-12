@@ -14,6 +14,7 @@ chrome.runtime.onMessage.addListener((message) => {
 });
 
 function displayCommentModal(commentData) {
+  const shadow = document.createElement("div").attachShadow({ mode: "open" });
   const modal = document.createElement("div");
   modal.classList.add("modal");
 
@@ -31,7 +32,6 @@ function displayCommentModal(commentData) {
   creatorNickname.style.borderBottom = "1px solid #ccc";
   creatorNickname.style.marginLeft = "10px";
   modal.appendChild(creatorNickname);
-  console.log(commentData.creator.nickname);
 
   const textContent = document.createElement("div");
   textContent.innerText = commentData.text;
@@ -57,5 +57,7 @@ function displayCommentModal(commentData) {
   modal.style.border = "1px solid black";
   modal.style.borderRadius = "10px";
 
-  document.body.appendChild(modal);
+  shadow.appendChild(modal);
+
+  document.body.appendChild(shadow);
 }
