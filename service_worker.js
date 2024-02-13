@@ -49,7 +49,7 @@ async function handleAddNewComment(message) {
 
 async function handleSubmitForm(message, sendResponse) {
   try {
-    const screenshot = await new Promise((resolve) => {
+    const imageDataUrl = await new Promise((resolve) => {
       chrome.tabs.captureVisibleTab(
         { format: "png", quality: 90 },
         (imageUrl) => {
@@ -58,7 +58,11 @@ async function handleSubmitForm(message, sendResponse) {
       );
     });
 
-    const encodeScreenshot = btoa(screenshot);
+    const imageResponse = await fetch(imageDataUrl);
+    const imageBlob = await imageResponse.blob();
+    const screenshot = new File([imageBlob], "screenshot.png", {
+      type: "image/png",
+    });
 
     const { currentUrl, userData } = await new Promise((resolve) => {
       chrome.storage.local.get(["currentUrl", "userData"], (result) => {
@@ -66,24 +70,23 @@ async function handleSubmitForm(message, sendResponse) {
       });
     });
 
-    const newComment = {
-      userData,
-      text: message.data.inputValue,
-      postDate: message.data.nowDate,
-      postUrl: currentUrl,
-      postCoordinate: message.data.postCoordinate,
-      screenshot: encodeScreenshot,
-      allowPublic: message.data.allowPublic,
-      publicUsers: message.data.publicUsers,
-      recipientEmail: message.data.recipientEmail,
-    };
+    const formData = new FormData();
+    formData.append("userData", userData.email);
+    formData.append("text", message.data.inputValue);
+    formData.append("postDate", message.data.nowDate);
+    formData.append("postUrl", currentUrl);
+    formData.append(
+      "postCoordinate",
+      JSON.stringify(message.data.postCoordinate),
+    );
+    formData.append("allowPublic", message.data.allowPublic);
+    formData.append("publicUsers", JSON.stringify(message.data.publicUsers));
+    formData.append("recipientEmail", message.data.recipientEmail);
+    formData.append("screenshot", screenshot);
 
     const response = await fetch("http://localhost:3000/comments/new", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newComment),
+      body: formData,
     });
 
     if (response.ok) {
@@ -131,6 +134,7 @@ async function handlePageUrlUpdated(message) {
     const responseData = await sendUserDataToServer(userId, pageUrl);
 
     const responseComments = responseData.pageComments;
+    console.log(responseComments);
 
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
