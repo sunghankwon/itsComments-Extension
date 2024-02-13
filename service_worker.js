@@ -58,8 +58,9 @@ async function handleSubmitForm(message, sendResponse) {
       );
     });
 
-    const blob = await fetch(imageDataUrl).then((res) => res.blob());
-    const screenshot = new File([blob], "screenshot.png", {
+    const imageResponse = await fetch(imageDataUrl);
+    const imageBlob = await imageResponse.blob();
+    const screenshot = new File([imageBlob], "screenshot.png", {
       type: "image/png",
     });
 
