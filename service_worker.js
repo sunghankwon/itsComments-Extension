@@ -15,6 +15,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case "updateLoginUser":
       handleUpdateLoginUser(message);
       break;
+    case "openCommentTab":
+      handleOpenCommentTab(message);
+      break;
   }
 });
 
@@ -22,10 +25,26 @@ async function handleUpdateLoginUser(message) {
   const loginUser = message.user;
 
   await chrome.storage.local.set({ loginUser });
+
+  chrome.cookies.set(
+    {
+      url: "http://localhost:5173",
+      name: "authToken",
+      value: message.token,
+      expirationDate: Math.floor(Date.now() / 1000 + 60 * 60 * 24),
+      secure: false,
+      httpOnly: false,
+    },
+    function (cookie) {
+      console.log("Token cookie set:", cookie);
+    },
+  );
 }
 
 async function handleOpenWebPage(message) {
-  await chrome.tabs.create({ url: `localhost:5173?token=${message.token}` });
+  await chrome.tabs.create({
+    url: `http://localhost:5173?token=${message.token}`,
+  });
 }
 
 async function handleAddNewComment(message) {
@@ -49,7 +68,7 @@ async function handleAddNewComment(message) {
 
 async function handleSubmitForm(message, sendResponse) {
   try {
-    const imageDataUrl = await new Promise((resolve) => {
+    const screenshot = await new Promise((resolve) => {
       chrome.tabs.captureVisibleTab(
         { format: "png", quality: 90 },
         (imageUrl) => {
@@ -58,11 +77,7 @@ async function handleSubmitForm(message, sendResponse) {
       );
     });
 
-    const imageResponse = await fetch(imageDataUrl);
-    const imageBlob = await imageResponse.blob();
-    const screenshot = new File([imageBlob], "screenshot.png", {
-      type: "image/png",
-    });
+    const encodeScreenshot = btoa(screenshot);
 
     const { currentUrl, userData } = await new Promise((resolve) => {
       chrome.storage.local.get(["currentUrl", "userData"], (result) => {
@@ -70,23 +85,24 @@ async function handleSubmitForm(message, sendResponse) {
       });
     });
 
-    const formData = new FormData();
-    formData.append("userData", userData.email);
-    formData.append("text", message.data.inputValue);
-    formData.append("postDate", message.data.nowDate);
-    formData.append("postUrl", currentUrl);
-    formData.append(
-      "postCoordinate",
-      JSON.stringify(message.data.postCoordinate),
-    );
-    formData.append("allowPublic", message.data.allowPublic);
-    formData.append("publicUsers", JSON.stringify(message.data.publicUsers));
-    formData.append("recipientEmail", message.data.recipientEmail);
-    formData.append("screenshot", screenshot);
+    const newComment = {
+      userData,
+      text: message.data.inputValue,
+      postDate: message.data.nowDate,
+      postUrl: currentUrl,
+      postCoordinate: message.data.postCoordinate,
+      screenshot: encodeScreenshot,
+      allowPublic: message.data.allowPublic,
+      publicUsers: message.data.publicUsers,
+      recipientEmail: message.data.recipientEmail,
+    };
 
     const response = await fetch("http://localhost:3000/comments/new", {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newComment),
     });
 
     if (response.ok) {
@@ -134,7 +150,6 @@ async function handlePageUrlUpdated(message) {
     const responseData = await sendUserDataToServer(userId, pageUrl);
 
     const responseComments = responseData.pageComments;
-    console.log(responseComments);
 
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
@@ -150,4 +165,10 @@ async function handlePageUrlUpdated(message) {
   } catch (error) {
     console.error("Error occurred during data transmission:", error);
   }
+}
+
+async function handleOpenCommentTab(message) {
+  const commentId = message.commentId;
+
+  chrome.tabs.create({ url: `http://localhost:5173/comments/${commentId}` });
 }
