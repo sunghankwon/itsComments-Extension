@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.action) {
     case "openWebPage":
-      handleOpenWebPage(message);
+      handleOpenWebPage();
       break;
     case "addNewComment":
       handleAddNewComment(message);
@@ -15,6 +15,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case "updateLoginUser":
       handleUpdateLoginUser(message);
       break;
+    case "openCommentTab":
+      handleOpenCommentTab(message);
+      break;
   }
 });
 
@@ -24,8 +27,8 @@ async function handleUpdateLoginUser(message) {
   await chrome.storage.local.set({ loginUser });
 }
 
-async function handleOpenWebPage(message) {
-  await chrome.tabs.create({ url: `localhost:5173?token=${message.token}` });
+async function handleOpenWebPage() {
+  await chrome.tabs.create({ url: `http://localhost:5173` });
 }
 
 async function handleAddNewComment(message) {
@@ -134,7 +137,6 @@ async function handlePageUrlUpdated(message) {
     const responseData = await sendUserDataToServer(userId, pageUrl);
 
     const responseComments = responseData.pageComments;
-    console.log(responseComments);
 
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
@@ -150,4 +152,10 @@ async function handlePageUrlUpdated(message) {
   } catch (error) {
     console.error("Error occurred during data transmission:", error);
   }
+}
+
+async function handleOpenCommentTab(message) {
+  const commentId = message.commentId;
+
+  chrome.tabs.create({ url: `http://localhost:5173/comments/${commentId}` });
 }
