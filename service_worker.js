@@ -35,13 +35,11 @@ async function handleAddNewComment(message) {
   const currentUrl = message.currentUrl;
   const userData = message.userData;
   const userFriends = userData.friends;
-  const userIcon = userData.icon;
 
   await chrome.storage.local.set({
     currentUrl,
     userData,
     userFriends,
-    userIcon,
   });
 
   chrome.scripting.executeScript({
