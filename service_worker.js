@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.action) {
     case "openWebPage":
-      handleOpenWebPage(message);
+      handleOpenWebPage();
       break;
     case "addNewComment":
       handleAddNewComment(message);
@@ -27,8 +27,8 @@ async function handleUpdateLoginUser(message) {
   await chrome.storage.local.set({ loginUser });
 }
 
-async function handleOpenWebPage(message) {
-  await chrome.tabs.create({ url: `localhost:5173?token=${message.token}` });
+async function handleOpenWebPage() {
+  await chrome.tabs.create({ url: `http://localhost:5173` });
 }
 
 async function handleAddNewComment(message) {

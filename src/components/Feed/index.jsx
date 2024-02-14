@@ -1,5 +1,5 @@
 import useUserStore from "../../store/userProfile";
-import UserComment from "../UserComment";
+import FeedComment from "../FeedComment";
 
 function Feed() {
   const { userData } = useUserStore();
@@ -8,7 +8,7 @@ function Feed() {
     <div className="overflow-auto">
       <div className="m-24 shadow-2xl backdrop-brightness-125">
         {userData.feedComments.map((comment) => {
-          return <UserComment key={comment.id} comment={comment} />;
+          return <FeedComment key={comment.id} comment={comment} />;
         })}
       </div>
       <div className="flex items-center justify-center mt-8 text-gray-500">

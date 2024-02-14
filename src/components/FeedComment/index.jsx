@@ -1,4 +1,4 @@
-function UserComment({ comment }) {
+function FeedComment({ comment }) {
   const openCommentTab = () => {
     chrome.runtime.sendMessage({
       action: "openCommentTab",
@@ -25,4 +25,4 @@ function UserComment({ comment }) {
   );
 }
 
-export default UserComment;
+export default FeedComment;
