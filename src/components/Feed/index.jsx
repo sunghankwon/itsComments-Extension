@@ -12,7 +12,7 @@ function Feed() {
         })}
       </div>
       <div className="flex items-center justify-center mt-8 text-gray-500">
-        No comments Left!
+        No comments Left
       </div>
     </div>
   );

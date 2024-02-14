@@ -25,26 +25,10 @@ async function handleUpdateLoginUser(message) {
   const loginUser = message.user;
 
   await chrome.storage.local.set({ loginUser });
-
-  chrome.cookies.set(
-    {
-      url: "http://localhost:5173",
-      name: "authToken",
-      value: message.token,
-      expirationDate: Math.floor(Date.now() / 1000 + 60 * 60 * 24),
-      secure: false,
-      httpOnly: false,
-    },
-    function (cookie) {
-      console.log("Token cookie set:", cookie);
-    },
-  );
 }
 
 async function handleOpenWebPage(message) {
-  await chrome.tabs.create({
-    url: `http://localhost:5173?token=${message.token}`,
-  });
+  await chrome.tabs.create({ url: `localhost:5173?token=${message.token}` });
 }
 
 async function handleAddNewComment(message) {
@@ -68,7 +52,7 @@ async function handleAddNewComment(message) {
 
 async function handleSubmitForm(message, sendResponse) {
   try {
-    const screenshot = await new Promise((resolve) => {
+    const imageDataUrl = await new Promise((resolve) => {
       chrome.tabs.captureVisibleTab(
         { format: "png", quality: 90 },
         (imageUrl) => {
@@ -77,7 +61,11 @@ async function handleSubmitForm(message, sendResponse) {
       );
     });
 
-    const encodeScreenshot = btoa(screenshot);
+    const imageResponse = await fetch(imageDataUrl);
+    const imageBlob = await imageResponse.blob();
+    const screenshot = new File([imageBlob], "screenshot.png", {
+      type: "image/png",
+    });
 
     const { currentUrl, userData } = await new Promise((resolve) => {
       chrome.storage.local.get(["currentUrl", "userData"], (result) => {
@@ -85,24 +73,23 @@ async function handleSubmitForm(message, sendResponse) {
       });
     });
 
-    const newComment = {
-      userData,
-      text: message.data.inputValue,
-      postDate: message.data.nowDate,
-      postUrl: currentUrl,
-      postCoordinate: message.data.postCoordinate,
-      screenshot: encodeScreenshot,
-      allowPublic: message.data.allowPublic,
-      publicUsers: message.data.publicUsers,
-      recipientEmail: message.data.recipientEmail,
-    };
+    const formData = new FormData();
+    formData.append("userData", userData.email);
+    formData.append("text", message.data.inputValue);
+    formData.append("postDate", message.data.nowDate);
+    formData.append("postUrl", currentUrl);
+    formData.append(
+      "postCoordinate",
+      JSON.stringify(message.data.postCoordinate),
+    );
+    formData.append("allowPublic", message.data.allowPublic);
+    formData.append("publicUsers", JSON.stringify(message.data.publicUsers));
+    formData.append("recipientEmail", message.data.recipientEmail);
+    formData.append("screenshot", screenshot);
 
     const response = await fetch("http://localhost:3000/comments/new", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newComment),
+      body: formData,
     });
 
     if (response.ok) {
