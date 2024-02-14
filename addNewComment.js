@@ -6,32 +6,42 @@ function removeElementsByClass(className) {
   }
 }
 
-function displayErrorMessage(parentElement, message) {
-  const errorMessage = document.createElement("div");
+function displayMessage(parentElement, message) {
+  const showMessage = document.createElement("div");
 
-  errorMessage.className = "error-message";
-  errorMessage.textContent = message;
+  showMessage.className = "show-message";
+  showMessage.textContent = message;
 
-  errorMessage.style.color = "red";
-  errorMessage.style.fontSize = "14px";
-  errorMessage.style.marginTop = "8px";
+  showMessage.style.cssText = `
+  color: red;
+  font-size: 14px;
+  margin-top: 8px;
+`;
 
-  parentElement.appendChild(errorMessage);
+  parentElement.appendChild(showMessage);
 
   setTimeout(() => {
-    errorMessage.remove();
+    showMessage.remove();
   }, 2000);
 }
 
 function setFriendDropdownStyle() {
   const friendsDropdown = document.createElement("select");
+  const initialOption = document.createElement("option");
 
-  friendsDropdown.style.width = "100%";
-  friendsDropdown.style.padding = "8px";
-  friendsDropdown.style.border = "1px solid #ccc";
-  friendsDropdown.style.borderRadius = "5px";
-  friendsDropdown.style.fontFamily = "Arial, sans-serif";
-  friendsDropdown.style.fontSize = "14px";
+  initialOption.value = "친구항목";
+  initialOption.text = "친구항목";
+  initialOption.disabled = true;
+  initialOption.selected = true;
+  friendsDropdown.appendChild(initialOption);
+
+  friendsDropdown.style.cssText = `
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  `;
 
   return friendsDropdown;
 }
@@ -40,17 +50,18 @@ function createCustomCursor(x, y) {
   const cursor = document.createElement("div");
   cursor.className = "custom-cursor";
 
-  cursor.style.cursor = "none";
-
-  cursor.style.position = "absolute";
-  cursor.style.left = `${x}px`;
-  cursor.style.top = `${y}px`;
-  cursor.style.width = "30px";
-  cursor.style.height = "30px";
-  cursor.style.zIndex = "1000";
-
-  cursor.style.backgroundColor = "blue";
-  cursor.style.borderRadius = "50%";
+  cursor.style.cssText = `
+    cursor: crosshair;
+    position: absolute;
+    left: ${x - 15}px;
+    top: ${y - 15}px;
+    width: 30px;
+    height: 30px;
+    z-index: 1000;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border: 2px solid black;
+  `;
 
   return cursor;
 }
@@ -58,34 +69,26 @@ function createCustomCursor(x, y) {
 function setModalStyle(shadowHost, modal, x, y) {
   modal.className = "newComment";
 
-  modal.style.position = "absolute";
-  modal.style.left = `${x}px`;
-  modal.style.top = `${y}px`;
-  modal.style.width = "300px";
-  modal.style.height = "200px";
-  modal.style.zIndex = "1000";
-
-  modal.style.background = "white";
-  modal.style.border = "1px solid black";
-  modal.style.borderRadius = "10px";
+  modal.style.cssText = `
+    position: absolute;
+    left: ${x}px;
+    top: ${y}px;
+    width: 300px;
+    min-height: 200px;
+    max-height: 80vh;
+    z-index: 1000;
+    background: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+  `;
 
   shadowHost.style.left = `${x}px`;
   shadowHost.style.top = `${y}px`;
-}
-
-function setUserIcon(userIcon) {
-  const userIconImg = document.createElement("img");
-
-  userIconImg.src = userIcon;
-  userIconImg.style.width = "50px";
-  userIconImg.style.height = "50px";
-  userIconImg.style.position = "absolute";
-  userIconImg.style.top = "0";
-  userIconImg.style.left = "0";
-
-  userIconImg.style.borderRadius = "50%";
-
-  return userIconImg;
 }
 
 function handleMouseMove(event) {
@@ -115,7 +118,7 @@ function handleMouseMove(event) {
   }
 }
 
-function openModal(x, y, userFriendsList, userIcon) {
+function openModal(x, y, userFriendsList) {
   removeElementsByClass("shadowHost");
 
   const shadowHost = document.createElement("div");
@@ -123,6 +126,7 @@ function openModal(x, y, userFriendsList, userIcon) {
   shadowHost.className = "shadowHost";
 
   const modal = document.createElement("form");
+
   modal.setAttribute("name", "comment");
   modal.addEventListener("submit", function (event) {
     handleSubmit(event, publicUsers, modal);
@@ -131,8 +135,28 @@ function openModal(x, y, userFriendsList, userIcon) {
   const friendsDropdown = setFriendDropdownStyle();
 
   const textarea = document.createElement("textarea");
+  textarea.style.cssText = `
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-sizing: border-box;
+  `;
+
   const emailInput = document.createElement("input");
+  emailInput.style.cssText = `
+    width: calc(100% - 22px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+  `;
+
   const allowPublic = document.createElement("select");
+  allowPublic.style.cssText = `
+    margin-top: 10px
+  `;
 
   const option1 = document.createElement("option");
   const option2 = document.createElement("option");
@@ -156,15 +180,16 @@ function openModal(x, y, userFriendsList, userIcon) {
     friendsDropdown.style.display = "none";
   });
 
-  friendsDropdown.addEventListener("click", function (event) {
+  friendsDropdown.addEventListener("change", function (event) {
     const selectedFriend = event.target.value;
     textarea.value = textarea.value.replace("@", "");
 
     if (publicUsers.includes(selectedFriend)) {
-      displayErrorMessage(modal, "이미 추가된 사람입니다!");
+      displayMessage(modal, "이미 추가된 사람입니다!");
       return;
     }
 
+    displayMessage(modal, `${event.target.value}가 추가 되었습니다!`);
     publicUsers.push(selectedFriend);
     friendsDropdown.style.display = "none";
   });
@@ -178,6 +203,17 @@ function openModal(x, y, userFriendsList, userIcon) {
   });
 
   const addEmailButton = document.createElement("button");
+
+  addEmailButton.style.cssText = `
+    background-color: #3498db;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+  `;
 
   emailInput.setAttribute("type", "email");
   emailInput.setAttribute("name", "email");
@@ -193,24 +229,42 @@ function openModal(x, y, userFriendsList, userIcon) {
     newEmailInput.setAttribute("name", "email");
     newEmailInput.placeholder = "이메일을 입력하세요";
 
+    newEmailInput.style.cssText = `
+      width: calc(100% - 22px);
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 10px;
+    `;
+
     modal.insertBefore(newEmailInput, emailInput.nextSibling);
   });
 
   const submitButton = document.createElement("button");
+  submitButton.style.cssText = `
+    background-color: #3498db;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+  `;
   submitButton.textContent = "전송";
-
-  const userIconImg = setUserIcon(userIcon);
-
-  modal.appendChild(textarea);
-  modal.appendChild(emailInput);
-  modal.appendChild(addEmailButton);
-  modal.appendChild(submitButton);
-  modal.appendChild(allowPublic);
-  modal.appendChild(friendsDropdown);
-  modal.appendChild(userIconImg);
 
   const closeButton = document.createElement("button");
   closeButton.textContent = "닫기";
+  closeButton.style.cssText = `
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+  `;
 
   closeButton.addEventListener("click", function (event) {
     event.preventDefault();
@@ -219,8 +273,16 @@ function openModal(x, y, userFriendsList, userIcon) {
     document.removeEventListener("mousemove", handleMouseMove);
   });
 
-  shadowRoot.appendChild(modal);
+  modal.appendChild(textarea);
+  modal.appendChild(friendsDropdown);
+  modal.appendChild(emailInput);
+  modal.appendChild(addEmailButton);
+  modal.appendChild(allowPublic);
+  modal.appendChild(submitButton);
   modal.appendChild(closeButton);
+
+  shadowRoot.appendChild(modal);
+
   setModalStyle(shadowHost, modal, x, y);
 
   document.body.appendChild(shadowHost);
@@ -260,10 +322,10 @@ function handleSubmit(event, publicUsers, modal) {
   }
 
   if (textareaElement.value.length > 200) {
-    displayErrorMessage(modal, "200자 이하로 작성해주세요");
+    displayMessage(modal, "200자 이하로 작성해주세요");
     return;
   } else if (textareaElement.value.length < 1) {
-    displayErrorMessage(modal, "1글자 이상 작성해주세요");
+    displayMessage(modal, "1글자 이상 작성해주세요");
     return;
   }
 
@@ -293,13 +355,12 @@ function handleSubmit(event, publicUsers, modal) {
 document.addEventListener(
   "click",
   function (event) {
-    chrome.storage.local.get(["userFriends", "userIcon"], (result) => {
+    chrome.storage.local.get(["userFriends"], (result) => {
       const userFriendsList = result.userFriends;
-      const userIcon = result.userIcon;
       const offsetX = event.pageX;
       const offsetY = event.pageY;
 
-      openModal(offsetX, offsetY, userFriendsList, userIcon);
+      openModal(offsetX, offsetY, userFriendsList);
     });
   },
   { once: true },
