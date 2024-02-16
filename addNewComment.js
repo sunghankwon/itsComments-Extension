@@ -27,13 +27,13 @@ function displayMessage(parentElement, message) {
 
 function setFriendDropdownStyle() {
   const friendsDropdown = document.createElement("select");
-  const initialOption = document.createElement("option");
+  const initialFriendsOption = document.createElement("option");
 
-  initialOption.value = "친구항목";
-  initialOption.text = "친구항목";
-  initialOption.disabled = true;
-  initialOption.selected = true;
-  friendsDropdown.appendChild(initialOption);
+  initialFriendsOption.value = "친구항목";
+  initialFriendsOption.text = "친구항목";
+  initialFriendsOption.disabled = true;
+  initialFriendsOption.selected = true;
+  friendsDropdown.appendChild(initialFriendsOption);
 
   friendsDropdown.style.cssText = `
     width: 100%;
@@ -154,6 +154,7 @@ function openModal(x, y, userFriendsList) {
   `;
 
   const allowPublic = document.createElement("select");
+  allowPublic.className = "allow-public";
   allowPublic.style.cssText = `
     margin-top: 10px
   `;
@@ -297,7 +298,7 @@ function handleSubmit(event, publicUsers, modal) {
 
   const shadowHostElements = document.body.getElementsByClassName("shadowHost");
   const textareaElement = event.target.querySelector("textarea");
-  const allowPublic = event.target.querySelector("select");
+  const allowPublic = event.target.getElementsByClassName("allow-public");
   const emailElements = event.target.querySelectorAll("input[name='email']");
   const recipientEmail = Array.from(emailElements).map(
     (emailInput) => emailInput.value,
@@ -315,7 +316,7 @@ function handleSubmit(event, publicUsers, modal) {
 
   let selectValue;
 
-  if (allowPublic.value === "공개") {
+  if (allowPublic[0].value === "공개") {
     selectValue = true;
   } else {
     selectValue = false;
