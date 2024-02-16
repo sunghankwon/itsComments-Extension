@@ -24,6 +24,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 async function handleUpdateLoginUser(message) {
   const loginUser = message.user;
 
+  chrome.cookies.set(
+    {
+      url: "http://localhost:5173",
+      name: "authToken",
+      value: message.token,
+      expirationDate: Math.floor(Date.now() / 1000 + 60 * 60),
+      secure: false,
+      httpOnly: false,
+    },
+    function (cookie) {
+      console.log("Token cookie set:", cookie);
+    },
+  );
+
   await chrome.storage.local.set({ loginUser });
 }
 
