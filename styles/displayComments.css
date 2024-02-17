@@ -1,0 +1,40 @@
+.icon {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.modal {
+  display: none;
+  position: absolute;
+  width: 300px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #38d431;
+  border-radius: 10px;
+  color: white;
+}
+
+.modal span {
+  float: right;
+  cursor: pointer;
+  color: #38d431;
+}
+
+.modal div {
+  border-bottom: 1px solid #ccc;
+  margin-left: 10px;
+  color: white;
+}
+
+.modal div:last-child {
+  border-bottom: none;
+}
+
+.modal a {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  color: #38d431;
+}
