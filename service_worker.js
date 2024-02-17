@@ -152,14 +152,14 @@ async function handlePageUrlUpdated(message) {
 
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const activeTab = tabs[0];
+      const tabId = activeTab.id;
+
       const message = {
         action: "sendDataToDisplayComments",
         data: responseComments,
       };
 
-      chrome.tabs.sendMessage(activeTab.id, message, (response) => {
-        console.log("Response from content script:", response);
-      });
+      chrome.tabs.sendMessage(tabId, message);
     });
   } catch (error) {
     console.error("Error occurred during data transmission:", error);
