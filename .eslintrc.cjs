@@ -8,7 +8,12 @@ module.exports = {
     "plugin:react-hooks/recommended",
     "prettier",
   ],
-  ignorePatterns: ["dist", ".eslintrc.cjs", "/src/index.css"],
+  ignorePatterns: [
+    "dist",
+    ".eslintrc.cjs",
+    "/src/index.css",
+    "/styles/displayComments.css",
+  ],
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
   settings: { react: { version: "18.2" } },
   plugins: ["react-refresh"],

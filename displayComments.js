@@ -1,3 +1,9 @@
+const styleSheet = document.createElement("link");
+styleSheet.rel = "stylesheet";
+styleSheet.type = "text/css";
+styleSheet.href = "styles/displayComments.css";
+document.head.appendChild(styleSheet);
+
 chrome.runtime.sendMessage({
   action: "pageUrlUpdated",
   url: window.location.href,
@@ -20,8 +26,6 @@ function displayCommentModal(commentData) {
 
   const closeButton = document.createElement("span");
   closeButton.innerText = "✖";
-  closeButton.style.float = "right";
-  closeButton.style.cursor = "pointer";
   closeButton.addEventListener("click", () => {
     modal.remove();
   });

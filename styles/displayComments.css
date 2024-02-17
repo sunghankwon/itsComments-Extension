@@ -1,0 +1,27 @@
+.modal {
+  position: absolute;
+  width: 300px;
+  background: white;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+.modal span {
+  float: right;
+  cursor: pointer;
+}
+
+.modal div {
+  border-bottom: 1px solid #ccc;
+  margin-left: 10px;
+}
+
+.modal div:last-child {
+  border-bottom: none;
+}
+
+.modal a {
+  display: block;
+  margin-top: 10px;
+  margin-left: 10px;
+}
