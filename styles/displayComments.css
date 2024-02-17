@@ -1,17 +1,18 @@
 .icon {
-  border-radius: 50%;
+  position: absolute;
   width: 40px;
   height: 40px;
-  position: absolute;
+  border-radius: 50%;
 }
 
 .modal {
+  display: none;
   position: absolute;
   width: 300px;
   background: rgba(0, 0, 0, 0.8);
   border: 1px solid #38d431;
   border-radius: 10px;
-  display: none;
+  color: white;
 }
 
 .modal span {
