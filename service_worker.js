@@ -171,3 +171,15 @@ async function handleOpenCommentTab(message) {
 
   chrome.tabs.create({ url: `http://localhost:5173/comments/${commentId}` });
 }
+
+chrome.commands.onCommand.addListener(() => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const activeTab = tabs[0];
+    const tabId = activeTab.id;
+
+    chrome.scripting.executeScript({
+      target: { tabId },
+      files: ["addNewComment.js"],
+    });
+  });
+});
