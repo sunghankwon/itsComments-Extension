@@ -1,19 +1,21 @@
 .modal {
   position: absolute;
   width: 300px;
-  background: white;
-  border: 1px solid black;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #38d431;
   border-radius: 10px;
 }
 
 .modal span {
   float: right;
   cursor: pointer;
+  color: #38d431;
 }
 
 .modal div {
   border-bottom: 1px solid #ccc;
   margin-left: 10px;
+  color: white;
 }
 
 .modal div:last-child {
@@ -24,4 +26,5 @@
   display: block;
   margin-top: 10px;
   margin-left: 10px;
+  color: #38d431;
 }
