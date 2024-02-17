@@ -43,7 +43,7 @@ function displayCommentModal(commentData) {
 
   const nextPageLink = document.createElement("a");
   nextPageLink.innerText = "댓글로 이동";
-  nextPageLink.href = "https://www.daum.net";
+  nextPageLink.href = `http://localhost:5173/comments/${commentData._id}`;
   nextPageLink.style.display = "block";
   nextPageLink.style.marginTop = "10px";
   nextPageLink.style.marginLeft = "10px";
