@@ -178,7 +178,7 @@ chrome.commands.onCommand.addListener(() => {
     const tabId = activeTab.id;
 
     chrome.scripting.executeScript({
-      target: { tabId: tabId },
+      target: { tabId },
       files: ["addNewComment.js"],
     });
   });
