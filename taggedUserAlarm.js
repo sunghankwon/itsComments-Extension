@@ -40,6 +40,12 @@ function alarmModal(icon, feedComments) {
     shadowRoot.removeChild(modalContainer);
   });
 
+  const userIconContainer = document.createElement("div");
+  userIconContainer.style.cssText = `
+    display: flex;
+    align-items: center;
+  `;
+
   const userIcon = document.createElement("img");
   userIcon.src = icon;
   userIcon.style.cssText = `
@@ -62,6 +68,16 @@ function alarmModal(icon, feedComments) {
         comment.style.display === "none" ? "flex" : "none";
     });
   });
+
+  const COMMENT_COUNT = feedComments.length;
+  const commentCount = document.createElement("div");
+  commentCount.innerText = COMMENT_COUNT;
+  commentCount.style.marginLeft = "5px";
+
+  userIconContainer.appendChild(userIcon);
+  userIconContainer.appendChild(commentCount);
+
+  modalContainer.appendChild(userIconContainer);
   modalContainer.appendChild(toggleComment);
   modalContainer.appendChild(closeButton);
 
