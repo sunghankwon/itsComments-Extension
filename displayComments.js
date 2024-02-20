@@ -72,13 +72,6 @@ function createModal(commentData) {
   const modal = document.createElement("div");
   modal.classList.add("modal");
 
-  const closeButton = document.createElement("span");
-  closeButton.innerText = "✖";
-  closeButton.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-  modal.appendChild(closeButton);
-
   const creatorNickname = document.createElement("div");
   creatorNickname.innerText = commentData.creator.nickname;
   modal.appendChild(creatorNickname);
