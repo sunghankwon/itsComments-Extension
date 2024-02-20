@@ -32,12 +32,35 @@ function displayCommentModal(commentData) {
   shadow.appendChild(icon);
 
   const modal = createModal(commentData);
+
   shadow.appendChild(modal);
 
-  icon.addEventListener("click", () => {
-    if (modal.style.display === "none" || modal.style.display === "") {
-      modal.style.display = "block";
-    } else {
+  let isIconHovered = false;
+  let isModalHovered = false;
+
+  icon.addEventListener("mouseover", () => {
+    isIconHovered = true;
+    modal.style.display = "block";
+  });
+
+  icon.addEventListener("mouseout", () => {
+    if (!isModalHovered) {
+      modal.style.display = "none";
+    }
+  });
+
+  modal.addEventListener("mouseover", () => {
+    isModalHovered = true;
+  });
+
+  document.addEventListener("mouseout", (e) => {
+    if (
+      !icon.contains(e.relatedTarget) &&
+      !modal.contains(e.relatedTarget) &&
+      (isIconHovered || isModalHovered)
+    ) {
+      isIconHovered = false;
+      isModalHovered = false;
       modal.style.display = "none";
     }
   });
