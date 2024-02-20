@@ -32,12 +32,35 @@ function displayCommentModal(commentData) {
   shadow.appendChild(icon);
 
   const modal = createModal(commentData);
+
   shadow.appendChild(modal);
 
-  icon.addEventListener("click", () => {
-    if (modal.style.display === "none" || modal.style.display === "") {
-      modal.style.display = "block";
-    } else {
+  let isIconHovered = false;
+  let isModalHovered = false;
+
+  icon.addEventListener("mouseover", () => {
+    isIconHovered = true;
+    modal.style.display = "block";
+  });
+
+  icon.addEventListener("mouseout", () => {
+    if (!isModalHovered) {
+      modal.style.display = "none";
+    }
+  });
+
+  modal.addEventListener("mouseover", () => {
+    isModalHovered = true;
+  });
+
+  document.addEventListener("mouseout", (e) => {
+    if (
+      !icon.contains(e.relatedTarget) &&
+      !modal.contains(e.relatedTarget) &&
+      (isIconHovered || isModalHovered)
+    ) {
+      isIconHovered = false;
+      isModalHovered = false;
       modal.style.display = "none";
     }
   });
@@ -48,13 +71,6 @@ function displayCommentModal(commentData) {
 function createModal(commentData) {
   const modal = document.createElement("div");
   modal.classList.add("modal");
-
-  const closeButton = document.createElement("span");
-  closeButton.innerText = "✖";
-  closeButton.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-  modal.appendChild(closeButton);
 
   const creatorNickname = document.createElement("div");
   creatorNickname.innerText = commentData.creator.nickname;

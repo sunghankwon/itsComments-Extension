@@ -3,22 +3,30 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  z-index: 9998;
+  transition: transform 0.3s ease-in-out;
+}
+
+.icon:hover {
+  transform: scale(1.2);
 }
 
 .modal {
   display: none;
   position: absolute;
   width: 300px;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.9);
   border: 1px solid #38d431;
   border-radius: 10px;
   color: white;
+  z-index: 9999;
 }
 
 .modal span {
   float: right;
   cursor: pointer;
-  color: #38d431;
+  color: white;
 }
 
 .modal div {
