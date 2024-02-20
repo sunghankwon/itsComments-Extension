@@ -81,7 +81,7 @@ function alarmModal(icon, feedComments) {
   modalContainer.appendChild(toggleComment);
   modalContainer.appendChild(closeButton);
 
-  feedComments.forEach((comment) => {
+  [...feedComments].reverse().forEach((comment) => {
     const userComment = document.createElement("div");
     userComment.className = "userComment";
     userComment.style.cssText = `
