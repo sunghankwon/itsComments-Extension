@@ -18,6 +18,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case "openCommentTab":
       handleOpenCommentTab(message);
       break;
+    case "taggedUserAlarm":
+      handleOpenAlarm(message);
+      break;
   }
 });
 
@@ -43,6 +46,19 @@ async function handleUpdateLoginUser(message) {
 
 async function handleOpenWebPage() {
   await chrome.tabs.create({ url: `http://localhost:5173` });
+}
+
+async function handleOpenAlarm(message) {
+  const userDataUpdate = message.userDataUpdate;
+
+  await chrome.storage.local.set({
+    userDataUpdate,
+  });
+
+  await chrome.scripting.executeScript({
+    target: { tabId: message.tabId },
+    files: ["taggedUserAlarm.js"],
+  });
 }
 
 async function handleAddNewComment(message) {
