@@ -13,7 +13,12 @@ function NewComment() {
         action: "addNewComment",
         tabId,
         currentUrl,
-        userData,
+        userData: userData
+          ? userData
+          : {
+              email: import.meta.env.VITE_NON_MEMBER_MAIL,
+              friends: [],
+            },
       });
     });
   };
