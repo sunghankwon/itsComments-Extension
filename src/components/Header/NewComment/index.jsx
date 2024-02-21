@@ -16,7 +16,7 @@ function NewComment() {
         userData: userData
           ? userData
           : {
-              email: "itscomments16@gmail.com",
+              email: import.meta.env.VITE_NON_MEMBER_MAIL,
               friends: [],
             },
       });
