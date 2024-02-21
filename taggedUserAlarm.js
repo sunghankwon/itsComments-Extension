@@ -24,9 +24,8 @@ function alarmModal(icon, feedComments) {
   const modalContainer = document.createElement("div");
   modalContainer.style.cssText = `
     position: fixed;
-    top: 10px;
-    left: 10px;
-    position: relative;
+    top: 70px;
+    right: 30px;
     background-color: rgba(173, 216, 230, 0.7);
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
