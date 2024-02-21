@@ -12,6 +12,7 @@ export default defineConfig({
         "./service_worker.js",
         "./addNewComment.js",
         "./displayComments.js",
+        "./taggedUserAlarm.js",
         "./styles/displayComments.css",
       ],
     }),
