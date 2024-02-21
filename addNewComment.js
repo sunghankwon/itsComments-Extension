@@ -279,7 +279,6 @@ function openModal(x, y, userFriendsList, userEmail) {
     emailInput.style.display = "none";
     allowPublic.style.display = "none";
     addEmailButton.style.display = "none";
-    modal.style.height = "100px";
   }
 
   modal.appendChild(textarea);
