@@ -140,11 +140,13 @@ async function sendUserDataToServer(userId, pageUrl) {
 async function handlePageUrlUpdated(message) {
   try {
     const pageUrl = message.url;
-    const userId = await new Promise((resolve) => {
+    let userId = await new Promise((resolve) => {
       chrome.storage.local.get(["loginUser"], (result) => {
         resolve(result.loginUser);
       });
     });
+
+    userId = userId || "65cccdc51ecc1196b364a1c7";
 
     const responseData = await sendUserDataToServer(userId, pageUrl);
 
