@@ -13,7 +13,12 @@ function NewComment() {
         action: "addNewComment",
         tabId,
         currentUrl,
-        userData,
+        userData: userData
+          ? userData
+          : {
+              email: "itscomments16@gmail.com",
+              friends: [],
+            },
       });
     });
   };

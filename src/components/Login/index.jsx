@@ -1,5 +1,6 @@
 import axios from "axios";
 import { auth, GoogleAuthProvider } from "../../utils/firebase";
+import NewComment from "../Header/NewComment";
 import useUserStore from "../../store/userProfile";
 
 function Login() {
@@ -41,6 +42,7 @@ function Login() {
 
   return (
     <div className="flex items-center justify-center">
+      <NewComment />
       <button
         onClick={handleLogin}
         className="bg-blue-500 text-white px-4 py-2 mt-[100px] rounded hover:bg-blue-700"

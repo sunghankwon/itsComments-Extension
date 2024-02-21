@@ -74,7 +74,7 @@ function setModalStyle(shadowHost, modal, x, y) {
     left: ${x}px;
     top: ${y}px;
     width: 300px;
-    min-height: 200px;
+    min-height: 100px;
     max-height: 80vh;
     z-index: 1000;
     background: white;
@@ -118,7 +118,7 @@ function handleMouseMove(event) {
   }
 }
 
-function openModal(x, y, userFriendsList) {
+function openModal(x, y, userFriendsList, userEmail) {
   removeElementsByClass("shadowHost");
 
   const shadowHost = document.createElement("div");
@@ -274,6 +274,14 @@ function openModal(x, y, userFriendsList) {
     document.removeEventListener("mousemove", handleMouseMove);
   });
 
+  if (userEmail === "itscomments16@gmail.com") {
+    friendsDropdown.style.display = "none";
+    emailInput.style.display = "none";
+    allowPublic.style.display = "none";
+    addEmailButton.style.display = "none";
+    modal.style.height = "100px";
+  }
+
   modal.appendChild(textarea);
   modal.appendChild(friendsDropdown);
   modal.appendChild(emailInput);
@@ -356,12 +364,13 @@ function handleSubmit(event, publicUsers, modal) {
 document.addEventListener(
   "click",
   function (event) {
-    chrome.storage.local.get(["userFriends"], (result) => {
+    chrome.storage.local.get(["userData", "userFriends"], (result) => {
       const userFriendsList = result.userFriends;
+      const userEmail = result.userData.email;
       const offsetX = event.pageX;
       const offsetY = event.pageY;
 
-      openModal(offsetX, offsetY, userFriendsList);
+      openModal(offsetX, offsetY, userFriendsList, userEmail);
     });
   },
   { once: true },
