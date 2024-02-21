@@ -8,7 +8,7 @@ function Feed() {
 
   useEffect(() => {
     const eventSource = new EventSource(
-      `http://localhost:3000/comments/comments-stream/${userData._id}`,
+      `${import.meta.env.VITE_SERVER_BACKEND}/comments/comments-stream/${userData._id}`,
     );
 
     eventSource.addEventListener("message", (event) => {
