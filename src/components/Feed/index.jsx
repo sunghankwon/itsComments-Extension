@@ -37,8 +37,8 @@ function Feed() {
   }, [setUserData]);
 
   return (
-    <div className="overflow-auto">
-      <div className="m-24 shadow-2xl backdrop-brightness-125">
+    <div className="flex flex-col items-center overflow-auto w- bg-gradient-to-b from-gray-700 via-gray-600 to-gray-500">
+      <div className="w-[310px] mt-8 border border-[#38d431] rounded-md shadow-2xl flex flex-col items-center">
         {userData.feedComments
           .slice()
           .reverse()

@@ -26,12 +26,14 @@ function NewComment() {
   };
 
   return (
-    <section className="justify-self-center">
+    <section className="flex justify-center">
       <button
         onClick={handleOnClick}
-        className="rounded-full text-xl font-bold border p-[10px] border-gray-300 hover:bg-slate-200"
+        className="rounded-xl mt-4 w-11/12 text-xl font-bold border p-[10px] border-[#38d431] text-white hover:bg-gray-400"
       >
         Create Comment
+        <br />
+        <span className="text-base">Command + Shift + Y</span>
       </button>
     </section>
   );
