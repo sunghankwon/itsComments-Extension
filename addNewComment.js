@@ -76,7 +76,7 @@ function setModalStyle(shadowHost, modal, x, y) {
     width: 300px;
     min-height: 100px;
     max-height: 80vh;
-    z-index: 1000;
+    z-index: 9999;
     background: white;
     border: 1px solid black;
     border-radius: 10px;
@@ -339,25 +339,22 @@ function handleSubmit(event, publicUsers, modal) {
 
   const nowDate = new Date();
 
-  chrome.runtime.sendMessage(
-    {
-      action: "submitForm",
-      data: {
-        inputValue: textareaElement.value,
-        allowPublic: selectValue,
-        recipientEmail,
-        postCoordinate,
-        publicUsers,
-        nowDate,
-      },
+  chrome.runtime.sendMessage({
+    action: "submitForm",
+    data: {
+      inputValue: textareaElement.value,
+      allowPublic: selectValue,
+      recipientEmail,
+      postCoordinate,
+      publicUsers,
+      nowDate,
     },
-    function (response) {
-      console.log(response);
-    },
-  );
+  });
 
-  document.removeEventListener("mousemove", handleMouseMove);
-  removeElementsByClass("shadowHost");
+  setTimeout(() => {
+    document.removeEventListener("mousemove", handleMouseMove);
+    removeElementsByClass("shadowHost");
+  }, 300);
 }
 
 document.addEventListener(

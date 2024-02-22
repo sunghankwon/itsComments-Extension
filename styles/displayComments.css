@@ -4,7 +4,7 @@
   height: 40px;
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-  z-index: 9998;
+  z-index: 9000;
   transition: transform 0.3s ease-in-out;
 }
 
@@ -20,7 +20,7 @@
   border: 1px solid #38d431;
   border-radius: 10px;
   color: white;
-  z-index: 9999;
+  z-index: 9100;
 }
 
 .modal span {

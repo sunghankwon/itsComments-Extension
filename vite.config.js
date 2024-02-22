@@ -13,6 +13,7 @@ export default defineConfig({
         "./addNewComment.js",
         "./displayComments.js",
         "./taggedUserAlarm.js",
+        "./addDisplayComment.js",
         "./styles/displayComments.css",
       ],
     }),

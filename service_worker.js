@@ -78,7 +78,7 @@ async function handleAddNewComment(message) {
   });
 }
 
-async function handleSubmitForm(message, sendResponse) {
+async function handleSubmitForm(message) {
   try {
     const imageDataUrl = await new Promise((resolve) => {
       chrome.tabs.captureVisibleTab(
@@ -121,15 +121,34 @@ async function handleSubmitForm(message, sendResponse) {
     });
 
     if (response.ok) {
-      console.log("Fetch complited");
+      const responseData = await response.json();
+      const newComment = responseData.newComment;
+
+      await chrome.storage.local.set({
+        newComment,
+        userData,
+      });
+
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        const activeTab = tabs[0];
+        const tabId = activeTab.id;
+
+        chrome.scripting.executeScript(
+          {
+            target: { tabId },
+            files: ["addDisplayComment.js"],
+          },
+          () => {
+            chrome.tabs.sendMessage(tabId, { action: "executeDisplayComment" });
+          },
+        );
+      });
     } else {
       console.error("some problem with Fetch");
     }
   } catch (error) {
     console.error("An error:", error);
   }
-
-  sendResponse("addNewComment has been arrived");
 }
 
 async function sendUserDataToServer(userId, pageUrl) {
