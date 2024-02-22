@@ -15,28 +15,33 @@ function displayCommentModal(commentData, userData) {
   const icon = document.createElement("img");
   icon.src = `${userData.icon}`;
   icon.classList.add("icon");
-  icon.style.position = "absolute";
-  icon.style.width = "40px";
-  icon.style.height = "40px";
-  icon.style.borderRadius = "50%";
-  icon.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.8)";
-  icon.style.zIndex = "9000";
-  icon.style.transition = "transform 0.3s ease-in-out";
 
-  icon.style.left = `${commentData.postCoordinate.x}`;
-  icon.style.top = `${commentData.postCoordinate.y}`;
+  icon.style.cssText = `
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  z-index: 9000;
+  transition: transform 0.3s ease-in-out;
+  left: ${commentData.postCoordinate.x};
+  top: ${commentData.postCoordinate.y};
+`;
 
   shadow.appendChild(icon);
 
   const modal = createModal(commentData, userData);
-  modal.style.position = "absolute";
-  modal.style.display = "none";
-  modal.style.width = "300px";
-  modal.style.background = "rgba(0, 0, 0, 0.9)";
-  modal.style.border = "1px solid #38d431";
-  modal.style.borderRadius = "10px";
-  modal.style.color = "white";
-  modal.style.zIndex = "9100";
+
+  modal.style.cssText = `
+  position: absolute;
+  display: none;
+  width: 300px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #38d431;
+  border-radius: 10px;
+  color: white;
+  z-index: 9100;
+`;
 
   const offsetX = 20;
   const offsetY = 20;
@@ -79,26 +84,38 @@ function createModal(commentData, userData) {
 
   const creatorNickname = document.createElement("div");
   creatorNickname.innerText = userData.nickname;
-  creatorNickname.style.borderBottom = "1px solid #ccc";
-  creatorNickname.style.marginLeft = "10px";
-  creatorNickname.style.color = "white";
+
+  creatorNickname.style.cssText = `
+  border-bottom: 1px solid #ccc;
+  margin-left: 10px;
+  color: white;
+`;
+
   modal.appendChild(creatorNickname);
 
   const textContent = document.createElement("div");
   textContent.innerText = commentData.text;
-  textContent.style.borderBottom = "1px solid #ccc";
-  textContent.style.marginLeft = "10px";
-  textContent.style.color = "white";
+
+  textContent.style.cssText = `
+  border-bottom: 1px solid #ccc;
+  margin-left: 10px;
+  color: white;
+`;
+
   modal.appendChild(textContent);
 
   const nextPageLink = document.createElement("a");
   nextPageLink.innerText = "댓글로 이동";
   nextPageLink.href = `http://localhost:5173/comments/${commentData._id}`;
-  nextPageLink.style.display = "block";
-  nextPageLink.style.marginTop = "5px";
-  nextPageLink.style.marginBottom = "5px";
-  nextPageLink.style.marginLeft = "10px";
-  nextPageLink.style.color = "#38d431";
+
+  nextPageLink.style.cssText = `
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  color: #38d431;
+`;
+
   modal.appendChild(nextPageLink);
 
   return modal;
