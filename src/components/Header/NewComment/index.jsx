@@ -17,6 +17,8 @@ function NewComment() {
           ? userData
           : {
               email: import.meta.env.VITE_NON_MEMBER_MAIL,
+              icon: import.meta.env.VITE_NON_MEMBER_ICON,
+              nickname: "비회원유저",
               friends: [],
             },
       });
