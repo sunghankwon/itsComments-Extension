@@ -20,7 +20,7 @@ function App() {
         try {
           const authToken = await user.getIdToken(true);
           const res = await axios.post(
-            import.meta.env.VITE_SERVER_URL,
+            `${import.meta.env.VITE_SERVER_URL}/login`,
             { user },
             { withCredentials: true },
           );
