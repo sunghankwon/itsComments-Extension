@@ -1,40 +1,13 @@
-import { useEffect } from "react";
-
 import useUserStore from "../../store/userProfile";
 import FeedComment from "../FeedComment";
 
 function Feed() {
   const { userData, setUserData } = useUserStore();
 
-  useEffect(() => {
-    const eventSource = new EventSource(
-      `${import.meta.env.VITE_SERVER_BACKEND}/comments/comments-stream/${userData._id}`,
-    );
-
-    eventSource.addEventListener("message", (event) => {
-      const userDataUpdate = JSON.parse(event.data);
-      setUserData(userDataUpdate);
-
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const activeTab = tabs[0];
-        const tabId = activeTab.id;
-
-        chrome.runtime.sendMessage({
-          action: "taggedUserAlarm",
-          tabId,
-          userDataUpdate,
-        });
-      });
-    });
-
-    eventSource.onerror = () => {
-      eventSource.close();
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [setUserData]);
+  chrome.storage.local.get(["userDataUpdate"], (result) => {
+    const userDataUpdate = result.userDataUpdate;
+    setUserData(userDataUpdate);
+  });
 
   return (
     <div className="flex flex-col items-center overflow-auto w- bg-gradient-to-b from-gray-700 via-gray-600 to-gray-500">

@@ -8,7 +8,10 @@ function ProfileModal({ onClose }) {
 
   const mutation = useMutation({
     mutationFn: (newProfile) => {
-      return axios.patch(import.meta.env.VITE_SERVER_USER, newProfile);
+      return axios.patch(
+        `${import.meta.env.VITE_SERVER_URL}/profile`,
+        newProfile,
+      );
     },
   });
 

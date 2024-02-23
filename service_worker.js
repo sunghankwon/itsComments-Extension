@@ -18,11 +18,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case "openCommentTab":
       handleOpenCommentTab(message);
       break;
-    case "taggedUserAlarm":
-      handleOpenAlarm(message);
-      break;
   }
 });
+
+popAlarm();
 
 async function handleUpdateLoginUser(message) {
   const loginUser = message.user;
@@ -46,19 +45,6 @@ async function handleUpdateLoginUser(message) {
 
 async function handleOpenWebPage() {
   await chrome.tabs.create({ url: `http://localhost:5173` });
-}
-
-async function handleOpenAlarm(message) {
-  const userDataUpdate = message.userDataUpdate;
-
-  await chrome.storage.local.set({
-    userDataUpdate,
-  });
-
-  await chrome.scripting.executeScript({
-    target: { tabId: message.tabId },
-    files: ["taggedUserAlarm.js"],
-  });
 }
 
 async function handleAddNewComment(message) {
@@ -208,6 +194,38 @@ async function handleOpenCommentTab(message) {
   const commentId = message.commentId;
 
   chrome.tabs.create({ url: `http://localhost:5173/comments/${commentId}` });
+}
+
+async function popAlarm() {
+  const loginUser = await new Promise((resolve) => {
+    chrome.storage.local.get(["loginUser"], (result) => {
+      resolve(result.loginUser);
+    });
+  });
+
+  const eventSource = new EventSource(
+    `http://localhost:3000/comments/comments-stream/${loginUser}`,
+  );
+
+  eventSource.addEventListener("message", async (event) => {
+    const userDataUpdate = JSON.parse(event.data);
+
+    await chrome.storage.local.set({
+      userDataUpdate,
+    });
+
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const activeTab = tabs[0];
+      const tabId = activeTab.id;
+
+      chrome.scripting.executeScript({
+        target: { tabId },
+        files: ["taggedUserAlarm.js"],
+      });
+
+      chrome.tabs.sendMessage(tabId, { action: "userUpdate", userDataUpdate });
+    });
+  });
 }
 
 chrome.commands.onCommand.addListener(() => {

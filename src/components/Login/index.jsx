@@ -26,7 +26,7 @@ function Login() {
 
       if (userCredential) {
         const res = await axios.post(
-          import.meta.env.VITE_BACKEND_LOGIN,
+          `${import.meta.env.VITE_SERVER_URL}/login`,
           { user: userCredential.user },
           { withCredentials: true },
         );
