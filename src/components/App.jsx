@@ -7,11 +7,9 @@ import Header from "./Header/Header";
 import Feed from "./Feed";
 
 import useUserStore from "../store/userProfile";
-import useAuthTokenStore from "../store/useToken";
 
 function App() {
   const { userData, setUserData } = useUserStore();
-  const { setAuthToken } = useAuthTokenStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +23,6 @@ function App() {
             { withCredentials: true },
           );
 
-          setAuthToken(authToken);
           setUserData(res.data.user);
 
           chrome.runtime.sendMessage({
@@ -47,7 +44,7 @@ function App() {
     return () => {
       unSubscribe();
     };
-  }, [setUserData]);
+  }, []);
 
   return (
     <main className="w-80 h-96 bg-gradient-to-b from-black via-gray-700 to-gray-500">
