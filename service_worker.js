@@ -74,17 +74,19 @@ async function handleSubmitForm(message) {
       type: "image/png",
     });
 
-    const { currentUrl, userData } = await new Promise((resolve) => {
+    let { currentUrl, userData } = await new Promise((resolve) => {
       chrome.storage.local.get(["currentUrl", "userData"], (result) => {
         resolve(result);
       });
     });
 
+    const modifiedUrl = getModifiedUrl(currentUrl);
+
     const formData = new FormData();
     formData.append("userData", userData.email);
     formData.append("text", message.data.inputValue);
     formData.append("postDate", message.data.nowDate);
-    formData.append("postUrl", currentUrl);
+    formData.append("postUrl", modifiedUrl);
     formData.append(
       "postCoordinate",
       JSON.stringify(message.data.postCoordinate),
@@ -219,6 +221,15 @@ async function popAlarm() {
       chrome.tabs.sendMessage(tabId, { action: "userUpdate", userDataUpdate });
     });
   });
+}
+
+function getModifiedUrl(currentUrl) {
+  const index = currentUrl.indexOf("?scroll=");
+
+  const modifiedUrl =
+    index !== -1 ? currentUrl.substring(0, index) : currentUrl;
+
+  return modifiedUrl;
 }
 
 chrome.commands.onCommand.addListener(() => {
