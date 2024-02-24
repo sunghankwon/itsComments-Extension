@@ -44,7 +44,7 @@ function App() {
     return () => {
       unSubscribe();
     };
-  }, [setUserData]);
+  }, []);
 
   return (
     <main className="w-80 h-96 bg-gradient-to-b from-black via-gray-700 to-gray-500">
