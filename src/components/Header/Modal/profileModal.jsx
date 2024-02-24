@@ -1,30 +1,39 @@
 import { useState } from "react";
-import { useMutation } from "react-query";
-
 import axios from "axios";
+import useUserStore from "../../../store/userProfile";
 
 function ProfileModal({ onClose }) {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
-
-  const mutation = useMutation({
-    mutationFn: (newProfile) => {
-      return axios.patch(
-        `${import.meta.env.VITE_SERVER_URL}/profile`,
-        newProfile,
-      );
-    },
-  });
+  const { userData, setUserData } = useUserStore();
 
   const handleFileChange = (event) => {
     const imageFile = event.target.files[0];
     setSelectedImageFile(imageFile);
   };
 
-  const handleUpload = () => {
-    if (selectedImageFile) {
-      mutation.mutate(selectedImageFile);
-    } else {
-      console.error("No file selected.");
+  const handleUpload = async () => {
+    try {
+      if (selectedImageFile) {
+        const formData = new FormData();
+        formData.append("profileIcon", selectedImageFile);
+        formData.append("userId", userData._id);
+
+        const response = await axios.patch(
+          `${import.meta.env.VITE_SERVER_URL}/profile`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
+
+        setUserData(response.data.user);
+      } else {
+        console.error("No file selected.");
+      }
+    } catch (error) {
+      console.error("Error uploading profile:", error.message);
     }
   };
 
