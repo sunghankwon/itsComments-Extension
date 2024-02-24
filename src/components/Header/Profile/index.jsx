@@ -3,20 +3,13 @@ import { createPortal } from "react-dom";
 
 import ProfileModal from "../Modal/profileModal";
 import useUserStore from "../../../store/userProfile";
-import useAuthTokenStore from "../../../store/useToken";
 
 function Profile() {
   const [isModalOpen, setModalOpen] = useState(false);
   const { userData } = useUserStore();
-  const { authToken } = useAuthTokenStore();
 
   function openWebPage() {
-    if (authToken) {
-      chrome.runtime.sendMessage({
-        action: "openWebPage",
-        token: authToken,
-      });
-    }
+    chrome.tabs.create({ url: "http://localhost:5173" });
   }
 
   return (
