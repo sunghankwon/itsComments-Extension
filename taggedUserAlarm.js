@@ -16,7 +16,7 @@ function alarmModal(icon, feedComments) {
     justify-content: flex-start;
   `;
 
-  const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+  const shadowRoot = shadowHost.attachShadow({ mode: "closed" });
 
   const modalContainer = document.createElement("div");
   modalContainer.style.cssText = `
