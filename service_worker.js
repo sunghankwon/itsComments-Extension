@@ -74,7 +74,7 @@ async function handleSubmitForm(message) {
       type: "image/png",
     });
 
-    let { currentUrl, userData } = await new Promise((resolve) => {
+    const { currentUrl, userData } = await new Promise((resolve) => {
       chrome.storage.local.get(["currentUrl", "userData"], (result) => {
         resolve(result);
       });
