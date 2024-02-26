@@ -198,8 +198,16 @@ async function popAlarm() {
     });
   });
 
+  const userFriends = await new Promise((resolve) => {
+    chrome.storage.local.get(["userData"], (result) => {
+      resolve(result.userData.friends);
+    });
+  });
+
+  const friendsString = userFriends.map((friend) => friend._id).join(",");
+
   const eventSource = new EventSource(
-    `http://localhost:3000/comments/comments-stream/${loginUser}`,
+    `http://localhost:3000/comments/comments-stream/${loginUser}?friends=${friendsString}`,
   );
 
   eventSource.addEventListener("message", async (event) => {
@@ -220,6 +228,10 @@ async function popAlarm() {
 
       chrome.tabs.sendMessage(tabId, { action: "userUpdate", userDataUpdate });
     });
+  });
+
+  eventSource.addEventListener("error", () => {
+    eventSource.close();
   });
 }
 
