@@ -6,6 +6,7 @@ function ProfileModal({ onClose }) {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [nickname, setNickname] = useState("");
   const { userData, setUserData } = useUserStore();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleFileChange = (event) => {
     const imageFile = event.target.files[0];
@@ -14,26 +15,35 @@ function ProfileModal({ onClose }) {
 
   const handleUpload = async () => {
     try {
-      if (selectedImageFile || nickname) {
-        const formData = new FormData();
-        formData.append("profileIcon", selectedImageFile);
-        formData.append("nickname", nickname);
-        formData.append("userId", userData._id);
-
-        const response = await axios.patch(
-          `${import.meta.env.VITE_SERVER_URL}/profile`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          },
-        );
-
-        setUserData(response.data.user);
-      } else {
-        console.error("No file selected.");
+      if (!selectedImageFile && !nickname.trim()) {
+        setErrorMessage("변경하려는 아이콘 이미지나 닉네임을 입력해주세요");
+        return;
       }
+
+      if (
+        nickname.trim() &&
+        (nickname.trim().length < 2 || nickname.trim().length > 20)
+      ) {
+        setErrorMessage("닉네임은 2글자 초과 20자 미만으로 입력해주세요.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("profileIcon", selectedImageFile);
+      formData.append("nickname", nickname);
+      formData.append("userId", userData._id);
+
+      const response = await axios.patch(
+        `${import.meta.env.VITE_SERVER_URL}/profile`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      setUserData(response.data.user);
     } catch (error) {
       console.error("Error uploading profile:", error.message);
     }
@@ -66,7 +76,7 @@ function ProfileModal({ onClose }) {
             <input
               type="text"
               value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              onChange={(event) => setNickname(event.target.value)}
               className="
               mt-1 px-4 py-2 border rounded-md
               text-sm text-slate-500
@@ -74,6 +84,7 @@ function ProfileModal({ onClose }) {
             "
             />
           </label>
+          <p className="text-red-400">{errorMessage}</p>
           <div className="flex flex-row space-x-4">
             <button
               onClick={handleUpload}
