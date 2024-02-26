@@ -244,15 +244,6 @@ function getModifiedUrl(currentUrl) {
   return modifiedUrl;
 }
 
-function getModifiedUrl(currentUrl) {
-  const index = currentUrl.indexOf("?scroll=");
-
-  const modifiedUrl =
-    index !== -1 ? currentUrl.substring(0, index) : currentUrl;
-
-  return modifiedUrl;
-}
-
 chrome.commands.onCommand.addListener(() => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const activeTab = tabs[0];
