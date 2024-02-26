@@ -236,6 +236,11 @@ chrome.commands.onCommand.addListener(() => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const activeTab = tabs[0];
     const tabId = activeTab.id;
+    const currentUrl = activeTab.url;
+
+    chrome.storage.local.set({
+      currentUrl,
+    });
 
     chrome.scripting.executeScript({
       target: { tabId },
