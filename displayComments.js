@@ -4,10 +4,27 @@ styleSheet.type = "text/css";
 styleSheet.href = "styles/displayComments.css";
 document.head.appendChild(styleSheet);
 
+const scroll = new URLSearchParams(window.location.search).get("scroll");
+if (scroll) {
+  window.scrollTo({
+    top: scroll,
+    behavior: "smooth",
+  });
+}
+
 chrome.runtime.sendMessage({
   action: "pageUrlUpdated",
-  url: window.location.href,
+  url: getModifiedUrl(window.location.href),
 });
+
+function getModifiedUrl(currentUrl) {
+  const index = currentUrl.indexOf("?scroll=");
+
+  const modifiedUrl =
+    index !== -1 ? currentUrl.substring(0, index) : currentUrl;
+
+  return modifiedUrl;
+}
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message.action === "sendDataToDisplayComments") {
