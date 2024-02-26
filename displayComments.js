@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener((message) => {
 });
 
 function displayCommentModal(commentData) {
-  const shadow = document.createElement("div").attachShadow({ mode: "open" });
+  const shadow = document.createElement("div").attachShadow({ mode: "closed" });
 
   const icon = document.createElement("img");
   icon.src = `${commentData.creator.icon}`;

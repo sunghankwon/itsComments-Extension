@@ -122,7 +122,7 @@ function openModal(x, y, userFriendsList, userEmail) {
   removeElementsByClass("shadowHost");
 
   const shadowHost = document.createElement("div");
-  const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+  const shadowRoot = shadowHost.attachShadow({ mode: "closed" });
   shadowHost.className = "shadowHost";
 
   const modal = document.createElement("form");

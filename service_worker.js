@@ -198,8 +198,16 @@ async function popAlarm() {
     });
   });
 
+  const userFriends = await new Promise((resolve) => {
+    chrome.storage.local.get(["userData"], (result) => {
+      resolve(result.userData.friends);
+    });
+  });
+
+  const friendsString = userFriends.map((friend) => friend._id).join(",");
+
   const eventSource = new EventSource(
-    `http://localhost:3000/comments/comments-stream/${loginUser}`,
+    `http://localhost:3000/comments/comments-stream/${loginUser}?friends=${friendsString}`,
   );
 
   eventSource.addEventListener("message", async (event) => {
@@ -221,6 +229,19 @@ async function popAlarm() {
       chrome.tabs.sendMessage(tabId, { action: "userUpdate", userDataUpdate });
     });
   });
+
+  eventSource.addEventListener("error", () => {
+    eventSource.close();
+  });
+}
+
+function getModifiedUrl(currentUrl) {
+  const index = currentUrl.indexOf("?scroll=");
+
+  const modifiedUrl =
+    index !== -1 ? currentUrl.substring(0, index) : currentUrl;
+
+  return modifiedUrl;
 }
 
 function getModifiedUrl(currentUrl) {
@@ -236,6 +257,11 @@ chrome.commands.onCommand.addListener(() => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const activeTab = tabs[0];
     const tabId = activeTab.id;
+    const currentUrl = activeTab.url;
+
+    chrome.storage.local.set({
+      currentUrl,
+    });
 
     chrome.scripting.executeScript({
       target: { tabId },
