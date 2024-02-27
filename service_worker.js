@@ -1,13 +1,13 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message) => {
   switch (message.action) {
     case "addNewComment":
       handleAddNewComment(message);
       break;
     case "submitForm":
-      handleSubmitForm(message, sendResponse);
+      handleSubmitForm(message);
       break;
     case "pageUrlUpdated":
-      handlePageUrlUpdated(message, sendResponse);
+      handlePageUrlUpdated(message);
       break;
     case "updateLoginUser":
       handleUpdateLoginUser(message);
@@ -23,19 +23,14 @@ popAlarm();
 async function handleUpdateLoginUser(message) {
   const loginUser = message.user;
 
-  chrome.cookies.set(
-    {
-      url: "http://localhost:5173",
-      name: "authToken",
-      value: message.token,
-      expirationDate: Math.floor(Date.now() / 1000 + 60 * 60),
-      secure: false,
-      httpOnly: false,
-    },
-    function (cookie) {
-      console.log("Token cookie set:", cookie);
-    },
-  );
+  chrome.cookies.set({
+    url: "http://localhost:5173",
+    name: "authToken",
+    value: message.token,
+    expirationDate: Math.floor(Date.now() / 1000 + 60 * 60),
+    secure: false,
+    httpOnly: false,
+  });
 
   await chrome.storage.local.set({ loginUser });
 }
@@ -96,10 +91,13 @@ async function handleSubmitForm(message) {
     formData.append("recipientEmail", message.data.recipientEmail);
     formData.append("screenshot", screenshot);
 
-    const response = await fetch("http://localhost:3000/comments/new", {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      "http://itscomments.ap-northeast-2.elasticbeanstalk.com/comments/new",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
 
     if (response.ok) {
       const responseData = await response.json();
@@ -134,7 +132,7 @@ async function handleSubmitForm(message) {
 
 async function sendUserDataToServer(userId, pageUrl) {
   try {
-    const serverEndpoint = `http://localhost:3000/location?userId=${encodeURIComponent(userId)}&pageUrl=${encodeURIComponent(pageUrl)}`;
+    const serverEndpoint = `http://itscomments.ap-northeast-2.elasticbeanstalk.com/location?userId=${encodeURIComponent(userId)}&pageUrl=${encodeURIComponent(pageUrl)}`;
 
     const response = await fetch(serverEndpoint, {
       method: "GET",
@@ -207,7 +205,7 @@ async function popAlarm() {
   const friendsString = userFriends.map((friend) => friend._id).join(",");
 
   const eventSource = new EventSource(
-    `http://localhost:3000/comments/comments-stream/${loginUser}?friends=${friendsString}`,
+    `http://itscomments.ap-northeast-2.elasticbeanstalk.com/comments/comments-stream/${loginUser}?friends=${friendsString}`,
   );
 
   eventSource.addEventListener("message", async (event) => {

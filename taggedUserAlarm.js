@@ -122,7 +122,7 @@ function alarmModal(icon, receivedComments, userId, userDataUpdate) {
 
     nextPageLink.addEventListener("click", async () => {
       const response = await fetch(
-        `http://localhost:3000/comments/${comment._id}?userId=${userId}&action=removeReceviedComment`,
+        `http://itscomments.ap-northeast-2.elasticbeanstalk.com/comments/${comment._id}?userId=${userId}&action=removeReceviedComment`,
         {
           method: "DELETE",
         },
