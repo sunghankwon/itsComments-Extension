@@ -1,11 +1,13 @@
 chrome.storage.local.get(["userDataUpdate"], (result) => {
-  const feedComments = result.userDataUpdate.feedComments;
-  const icon = result.userDataUpdate.icon;
+  const userDataUpdate = result.userDataUpdate;
+  const receivedComments = result.userDataUpdate.receivedComments;
+  const icon = userDataUpdate.icon;
+  const userId = userDataUpdate._id.toString();
 
-  alarmModal(icon, feedComments);
+  alarmModal(icon, receivedComments, userId, userDataUpdate);
 });
 
-function alarmModal(icon, feedComments) {
+function alarmModal(icon, receivedComments, userId, userDataUpdate) {
   const shadowHost = document.createElement("div");
   shadowHost.style.cssText = `
     position: fixed;
@@ -65,7 +67,7 @@ function alarmModal(icon, feedComments) {
     });
   });
 
-  const COMMENT_COUNT = feedComments.length;
+  const COMMENT_COUNT = receivedComments.length;
   const commentCount = document.createElement("div");
   commentCount.innerText = COMMENT_COUNT;
   commentCount.style.marginLeft = "5px";
@@ -77,7 +79,7 @@ function alarmModal(icon, feedComments) {
   modalContainer.appendChild(toggleComment);
   modalContainer.appendChild(closeButton);
 
-  [...feedComments].reverse().forEach((comment) => {
+  [...receivedComments].reverse().forEach((comment) => {
     const userComment = document.createElement("div");
     userComment.className = "userComment";
     userComment.style.cssText = `
@@ -117,6 +119,33 @@ function alarmModal(icon, feedComments) {
     const nextPageLink = document.createElement("a");
     nextPageLink.innerText = "댓글로 이동";
     nextPageLink.href = `http://localhost:5173/comments/${comment._id}`;
+
+    nextPageLink.addEventListener("click", async () => {
+      const response = await fetch(
+        `http://localhost:3000/comments/${comment._id}?userId=${userId}&action=removeReceviedComment`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (response.ok) {
+        modalContainer.removeChild(userComment);
+
+        const indexToRemove = receivedComments.findIndex(
+          (receivedComment) => receivedComment._id === comment._id,
+        );
+
+        if (indexToRemove !== -1) {
+          userDataUpdate.receivedComments.splice(indexToRemove, 1);
+
+          commentCount.innerText = userDataUpdate.receivedComments.length;
+
+          await chrome.storage.local.set({ userDataUpdate });
+        }
+      } else {
+        console.error("some problem with Fetch in popAlarm");
+      }
+    });
 
     userComment.appendChild(creatorIcon);
     userComment.appendChild(creatorNickname);
