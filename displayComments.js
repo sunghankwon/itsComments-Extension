@@ -121,17 +121,17 @@ function createModal(commentData) {
 
   const nextPageLink = createStyle("");
   nextPageLink.innerHTML = `
-                            <a href="http://localhost:5173/comments/${commentData._id}"
-                              style="
-                              display:
-                              block;
-                              margin-top: 5px;
-                              margin-bottom: 5px;
-                              color: #38d431;"
-                            >
-                              댓글로 이동
-                            </a>
-                            `;
+    <a href="http://localhost:5173/comments/${commentData._id}"
+      style="
+      display:
+      block;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      color: #38d431;"
+    >
+      댓글로 이동
+    </a>
+  `;
 
   modal.appendChild(creatorNickname);
   modal.appendChild(textContent);
