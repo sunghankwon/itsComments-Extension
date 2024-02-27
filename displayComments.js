@@ -1,10 +1,5 @@
-const styleSheet = document.createElement("link");
-styleSheet.rel = "stylesheet";
-styleSheet.type = "text/css";
-styleSheet.href = "styles/displayComments.css";
-document.head.appendChild(styleSheet);
-
 const scroll = new URLSearchParams(window.location.search).get("scroll");
+
 if (scroll) {
   window.scrollTo({
     top: scroll,
@@ -37,20 +32,28 @@ chrome.runtime.onMessage.addListener((message) => {
 });
 
 function displayCommentModal(commentData) {
-  const shadow = document.createElement("div").attachShadow({ mode: "closed" });
+  const shadowHost = document.createElement("div");
+  const shadowRoot = shadowHost.attachShadow({ mode: "closed" });
 
   const icon = document.createElement("img");
   icon.src = `${commentData.creator.icon}`;
-  icon.classList.add("icon");
+  icon.style.cssText = `
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  z-index: 9000;
+  transition: transform 0.3s ease-in-out;
+  left: ${commentData.postCoordinate.x};
+  top: ${commentData.postCoordinate.y};
+`;
 
-  icon.style.left = `${commentData.postCoordinate.x}`;
-  icon.style.top = `${commentData.postCoordinate.y}`;
-
-  shadow.appendChild(icon);
+  shadowRoot.appendChild(icon);
 
   const modal = createModal(commentData);
 
-  shadow.appendChild(modal);
+  shadowRoot.appendChild(modal);
 
   let isIconHovered = false;
   let isModalHovered = false;
@@ -82,34 +85,57 @@ function displayCommentModal(commentData) {
     }
   });
 
-  document.body.appendChild(shadow);
+  document.body.appendChild(shadowRoot);
 }
 
 function createModal(commentData) {
   const modal = document.createElement("div");
-  modal.classList.add("modal");
+  modal.style.cssText = `
+  display: none;
+  position: absolute;
+  width: 300px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #38d431;
+  border-radius: 10px;
+  color: white;
+  z-index: 9100;
+  left: ${parseInt(commentData.postCoordinate.x, 10) + 20}px;
+  top: ${parseInt(commentData.postCoordinate.y, 10) + 20}px;
+`;
 
-  const creatorNickname = document.createElement("div");
+  const createStyle = (style) => {
+    const elementStyle = document.createElement("div");
+    elementStyle.style.cssText = `
+    ${style};
+    margin-left: 10px;
+    color: white;
+  `;
+    return elementStyle;
+  };
+
+  const creatorNickname = createStyle("border-bottom: 1px solid #ccc;");
   creatorNickname.innerText = commentData.creator.nickname;
-  modal.appendChild(creatorNickname);
 
-  const textContent = document.createElement("div");
+  const textContent = createStyle("border-bottom: 1px solid #ccc;");
   textContent.innerText = commentData.text;
+
+  const nextPageLink = createStyle("");
+  nextPageLink.innerHTML = `
+                            <a href="http://localhost:5173/comments/${commentData._id}"
+                              style="
+                              display:
+                              block;
+                              margin-top: 5px;
+                              margin-bottom: 5px;
+                              color: #38d431;"
+                            >
+                              댓글로 이동
+                            </a>
+                            `;
+
+  modal.appendChild(creatorNickname);
   modal.appendChild(textContent);
-
-  const nextPageLink = document.createElement("a");
-  nextPageLink.innerText = "댓글로 이동";
-  nextPageLink.href = `http://localhost:5173/comments/${commentData._id}`;
   modal.appendChild(nextPageLink);
-
-  const offsetX = 20;
-  const offsetY = 20;
-
-  const currentX = parseInt(commentData.postCoordinate.x, 10);
-  const currentY = parseInt(commentData.postCoordinate.y, 10);
-
-  modal.style.left = `${currentX + offsetX}px`;
-  modal.style.top = `${currentY + offsetY}px`;
 
   return modal;
 }
