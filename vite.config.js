@@ -14,7 +14,6 @@ export default defineConfig({
         "./displayComments.js",
         "./taggedUserAlarm.js",
         "./addDisplayComment.js",
-        "./styles/displayComments.css",
       ],
     }),
   ],

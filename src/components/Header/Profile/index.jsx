@@ -16,12 +16,12 @@ function Profile() {
     <div className="text-xl font-bold border-gray-300 drop-shadow-lg flex items-center">
       <button onClick={() => setModalOpen(true)}>
         <img
-          className="h-12 w-12 mt-6 ml-3 drop-shadow-lg object-cover rounded-full p-[3px] border-gray-300 hover:bg-slate-200"
+          className="h-12 w-12 mt-6 ml-3 drop-shadow-lg object-cover rounded-full p-[3px] hover:bg-slate-200"
           src={userData.icon}
         />
       </button>
       <button
-        className="mt-6 mr-5 text-balance text-white border-solid border p-2 border-[#38d431] rounded-md ml-auto"
+        className="mt-6 mr-5 text-balance text-white border-solid border p-2 rounded-md ml-auto hover:bg-gray-400"
         onClick={openWebPage}
       >
         Open itsComment Web

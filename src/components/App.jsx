@@ -47,22 +47,17 @@ function App() {
   }, []);
 
   return (
-    <main className="w-80 h-96 bg-gradient-to-b from-black via-gray-700 to-gray-500">
+    <main className="w-80 h-96 bg-gradient-to-b from-gray-700 via-gray-900 to-gray-800">
       {loading ? (
-        <div className="flex flex-col items-center justify-center h-full">
+        <div className="flex flex-col items-center justify-center h-full bg-gradient-to-b from-gray-700 via-gray-500 to-gray-400">
+          <div className="animate-spin rounded-full border-t-8 border-red-300 border-opacity-30 h-32 w-32"></div>
           <div>Loading...</div>
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url('https://dz9x2uv87bh4n.cloudfront.net/loading1.svg')`,
-            }}
-          />
         </div>
       ) : userData ? (
-        <>
+        <div className="bg-gradient-to-b from-gray-700 via-gray-900 to-gray-800">
           <Header />
           <Feed />
-        </>
+        </div>
       ) : (
         <Login />
       )}

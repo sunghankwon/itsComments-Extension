@@ -1,25 +1,74 @@
+import { useEffect } from "react";
 import useFeedStore from "../../store/useFeed";
+import useUserStore from "../../store/userProfile";
 import FeedComment from "../FeedComment";
+
+import axios from "axios";
 
 function Feed() {
   const { commentsList, setCommentsList } = useFeedStore();
+  const { userData } = useUserStore();
 
-  chrome.storage.local.get(["userDataUpdate"], (result) => {
-    const userDataUpdate = result.userDataUpdate;
-    setCommentsList(userDataUpdate.feedComments);
-  });
+  async function removeComment(commentId) {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_SERVER_URL}/comments/${commentId}`,
+        {
+          params: { userId: userData._id, action: "removeReceviedComment" },
+        },
+      );
+
+      const userDataUpdate = response.data.removeCommentUser;
+
+      if (response.status === 200) {
+        const updatedCommentsList = commentsList.filter(
+          (comment) => comment.id !== commentId,
+        );
+
+        await chrome.storage.local.set({ userDataUpdate });
+
+        setCommentsList(updatedCommentsList);
+      } else {
+        console.error("Failed to delete comment. Server response:", response);
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  }
+
+  useEffect(() => {
+    const receivedComments = userData.receivedComments;
+
+    setCommentsList(receivedComments);
+  }, []);
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message.action === "userUpdate") {
+        const userDataUpdate = message.userDataUpdate;
+
+        setCommentsList(userDataUpdate.receivedComments);
+      }
+    });
+  }, [setCommentsList]);
 
   return (
-    <div className="flex flex-col items-center overflow-auto w- bg-gradient-to-b from-gray-700 via-gray-600 to-gray-500">
-      <div className="w-[310px] mt-8 border border-[#38d431] rounded-md shadow-2xl flex flex-col items-center">
+    <div className="flex flex-col items-center">
+      <div className="w-[310px] mt-3 rounded-md shadow-2xl flex flex-col items-center">
         {commentsList
           .slice()
           .reverse()
           .map((comment) => {
-            return <FeedComment key={comment.id} comment={comment} />;
+            return (
+              <FeedComment
+                key={comment.id}
+                comment={comment}
+                onRemoveComment={() => removeComment(comment._id)}
+              />
+            );
           })}
       </div>
-      <div className="flex items-center justify-center mt-8 text-gray-500">
+      <div className="flex items-center justify-center mt-4 text-white">
         No comments Left
       </div>
     </div>

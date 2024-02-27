@@ -50,7 +50,7 @@ function Login() {
         <p className="mt-2 text-4xl text-white">Its Comments! </p>
         <button
           onClick={handleLogin}
-          className="w-11/12 bg-green-500 text-white px-4 py-2 mt-[30px] rounded hover:bg-green-700"
+          className="w-11/12 bg-blue-500 text-white px-4 py-2 mt-[30px] rounded hover:bg-blue-700"
         >
           Login with Google
         </button>

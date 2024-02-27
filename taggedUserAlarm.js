@@ -1,11 +1,13 @@
 chrome.storage.local.get(["userDataUpdate"], (result) => {
-  const feedComments = result.userDataUpdate.feedComments;
-  const icon = result.userDataUpdate.icon;
+  const userDataUpdate = result.userDataUpdate;
+  const receivedComments = result.userDataUpdate.receivedComments;
+  const icon = userDataUpdate.icon;
+  const userId = userDataUpdate._id.toString();
 
-  alarmModal(icon, feedComments);
+  alarmModal(icon, receivedComments, userId, userDataUpdate);
 });
 
-function alarmModal(icon, feedComments) {
+function alarmModal(icon, receivedComments, userId, userDataUpdate) {
   const shadowHost = document.createElement("div");
   shadowHost.style.cssText = `
     position: fixed;
@@ -32,8 +34,26 @@ function alarmModal(icon, feedComments) {
 
   const closeButton = document.createElement("button");
   closeButton.textContent = "Close";
+  closeButton.style.cssText = `
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 60px;
+    transition: background-color 0.3s;
+  `;
   closeButton.addEventListener("click", () => {
     shadowRoot.removeChild(modalContainer);
+  });
+
+  closeButton.addEventListener("mouseenter", () => {
+    closeButton.style.backgroundColor = "#2980b9";
+  });
+
+  closeButton.addEventListener("mouseleave", () => {
+    closeButton.style.backgroundColor = "#3498db";
   });
 
   const userIconContainer = document.createElement("div");
@@ -45,18 +65,26 @@ function alarmModal(icon, feedComments) {
   const userIcon = document.createElement("img");
   userIcon.src = icon;
   userIcon.style.cssText = `
-    height: 20px;
-    width: 20px;
+    height: 23px;
+    width: 23px;
     object-fit: cover;
     border-radius: 50%;
     padding: 3px;
-    border: 1px solid #D1D5DB;
   `;
   modalContainer.appendChild(userIcon);
 
   const toggleComment = document.createElement("button");
 
   toggleComment.innerText = "댓글열기";
+  toggleComment.style.cssText = `
+    background-color: #27ae60;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  `;
   toggleComment.addEventListener("click", () => {
     const userComments = modalContainer.querySelectorAll(".userComment");
     userComments.forEach((comment) => {
@@ -65,10 +93,22 @@ function alarmModal(icon, feedComments) {
     });
   });
 
-  const COMMENT_COUNT = feedComments.length;
+  toggleComment.addEventListener("mouseenter", () => {
+    toggleComment.style.backgroundColor = "#218e53";
+  });
+
+  toggleComment.addEventListener("mouseleave", () => {
+    toggleComment.style.backgroundColor = "#27ae60";
+  });
+
+  const COMMENT_COUNT = receivedComments.length;
   const commentCount = document.createElement("div");
   commentCount.innerText = COMMENT_COUNT;
-  commentCount.style.marginLeft = "5px";
+  commentCount.style.cssText = `
+    margin-left: 5px;
+    font-weight: bold;
+    color: #333;
+  `;
 
   userIconContainer.appendChild(userIcon);
   userIconContainer.appendChild(commentCount);
@@ -77,49 +117,101 @@ function alarmModal(icon, feedComments) {
   modalContainer.appendChild(toggleComment);
   modalContainer.appendChild(closeButton);
 
-  [...feedComments].reverse().forEach((comment) => {
+  [...receivedComments].reverse().forEach((comment) => {
     const userComment = document.createElement("div");
     userComment.className = "userComment";
     userComment.style.cssText = `
       display: flex;
       flex-direction: column;
+      margin-top: 10px;
       margin-bottom: 10px;
-      border: 1px solid #D1D5DB;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     `;
 
     const creatorIcon = document.createElement("img");
     creatorIcon.src = comment.creator.icon;
     creatorIcon.style.cssText = `
-      height: 20px;
-      width: 20px;
+      height: 23px;
+      width: 23px;
       object-fit: cover;
       border-radius: 50%;
       padding: 3px;
-      border: 1px solid #D1D5DB;
+    `;
+
+    const creatorInfoContainer = document.createElement("div");
+    creatorInfoContainer.style.cssText = `
+      display: flex;
+      flex-direction: column;
+      margin-left: 8px;
     `;
 
     const creatorNickname = document.createElement("div");
     creatorNickname.innerText = comment.creator.nickname;
+    creatorNickname.style.cssText = `
+      font-weight: bold;
+      color: #333;
+    `;
+
+    creatorInfoContainer.appendChild(creatorIcon);
+    creatorInfoContainer.appendChild(creatorNickname);
 
     const textContent = document.createElement("div");
     textContent.innerText = comment.text;
+    textContent.style.cssText = `
+      color: #ffffff;
+      margin-left: 8px;
+    `;
 
     const screenShot = document.createElement("img");
     screenShot.src = comment.screenshot;
     screenShot.style.cssText = `
-      max-width: 100px;
-      max-height: 100px;
+      max-width: 200px;
+      max-height: 200px;
       object-fit: cover;
       padding: 3px;
-      border: 1px solid #D1D5DB;
     `;
 
     const nextPageLink = document.createElement("a");
     nextPageLink.innerText = "댓글로 이동";
     nextPageLink.href = `http://localhost:5173/comments/${comment._id}`;
+    nextPageLink.style.cssText = `
+      color: #5f5f5f;
+      text-decoration: none;
+      cursor: pointer;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
 
-    userComment.appendChild(creatorIcon);
-    userComment.appendChild(creatorNickname);
+    nextPageLink.addEventListener("click", async () => {
+      const response = await fetch(
+        `http://itscomments.ap-northeast-2.elasticbeanstalk.com/comments/${comment._id}?userId=${userId}&action=removeReceviedComment`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (response.ok) {
+        modalContainer.removeChild(userComment);
+
+        const indexToRemove = receivedComments.findIndex(
+          (receivedComment) => receivedComment._id === comment._id,
+        );
+
+        if (indexToRemove !== -1) {
+          userDataUpdate.receivedComments.splice(indexToRemove, 1);
+
+          commentCount.innerText = userDataUpdate.receivedComments.length;
+
+          await chrome.storage.local.set({ userDataUpdate });
+        }
+      } else {
+        console.error("some problem with Fetch in popAlarm");
+      }
+    });
+
+    userComment.appendChild(creatorInfoContainer);
     userComment.appendChild(textContent);
     userComment.appendChild(screenShot);
     userComment.appendChild(nextPageLink);
