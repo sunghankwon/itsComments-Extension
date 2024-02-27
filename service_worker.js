@@ -219,29 +219,26 @@ async function popAlarm() {
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];
-      const tabId = activeTab.id;
 
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["taggedUserAlarm.js"],
-      });
+      if (activeTab) {
+        const tabId = activeTab.id;
 
-      chrome.tabs.sendMessage(tabId, { action: "userUpdate", userDataUpdate });
+        chrome.scripting.executeScript({
+          target: { tabId },
+          files: ["taggedUserAlarm.js"],
+        });
+
+        chrome.runtime.sendMessage({
+          action: "userUpdate",
+          userDataUpdate,
+        });
+      }
     });
   });
 
   eventSource.addEventListener("error", () => {
     eventSource.close();
   });
-}
-
-function getModifiedUrl(currentUrl) {
-  const index = currentUrl.indexOf("?scroll=");
-
-  const modifiedUrl =
-    index !== -1 ? currentUrl.substring(0, index) : currentUrl;
-
-  return modifiedUrl;
 }
 
 function getModifiedUrl(currentUrl) {

@@ -1,4 +1,4 @@
-function FeedComment({ comment }) {
+function FeedComment({ comment, onRemoveComment }) {
   const openCommentTab = () => {
     chrome.runtime.sendMessage({
       action: "openCommentTab",
@@ -6,8 +6,17 @@ function FeedComment({ comment }) {
     });
   };
 
+  const handleLinkClick = () => {
+    onRemoveComment(comment._id);
+  };
+
+  const handleImageClick = () => {
+    onRemoveComment(comment._id);
+    openCommentTab();
+  };
+
   return (
-    <div className="w-[250px] mt-6 mb-6 border border-[#38d431] rounded-md shadow-lg shadow-green-500 md:shadow-xl">
+    <div className="w-[250px] mt-3 mb-3 border border-blue-500 rounded-md shadow-lg shadow-blue-500 md:shadow-xl">
       <div className="flex mt-2 items-center">
         <img
           src={comment.creator.icon}
@@ -18,13 +27,18 @@ function FeedComment({ comment }) {
         </span>
       </div>
       <p className="ml-2 text-base text-white">{comment.text}</p>
-      <img onClick={openCommentTab} src={comment.screenshot} />
+      <img onClick={handleImageClick} src={comment.screenshot} />
       <div className="flex ml-2 mt-2 mb-2 items-center">
         <span className="text-white">
-          {comment.privacy === "public" ? "공개" : "비공개"}
+          {comment.allowPublic === true ? "공개" : "비공개"}
         </span>
-        <a href={comment.postUrl} target="_black" rel="noopener noreferrer">
-          <button className="ml-4 bg-green-200 hover:bg-green-400 active:bg-green-700 focus:outline-none focus:ring focus:ring-green-300 rounded-md">
+        <a
+          href={comment.postUrl}
+          onClick={handleLinkClick}
+          target="_black"
+          rel="noopener noreferrer"
+        >
+          <button className="ml-4 bg-blue-200 hover:bg-blue-400 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 rounded-md">
             URL 링크
           </button>
         </a>
