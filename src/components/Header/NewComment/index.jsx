@@ -29,7 +29,7 @@ function NewComment() {
     <section className="flex justify-center">
       <button
         onClick={handleOnClick}
-        className="rounded-xl mt-4 w-11/12 text-xl font-bold border p-[10px] border-[#38d431] text-white hover:bg-gray-400"
+        className="rounded-xl mt-4 w-11/12 bg-gray-800 text-xl font-bold text-white hover:bg-gray-400"
       >
         Create Comment
         <br />
