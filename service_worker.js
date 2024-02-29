@@ -75,7 +75,7 @@ async function handleSubmitForm(message) {
       type: "image/png",
     });
 
-    let { currentUrl, userData } = await new Promise((resolve) => {
+    const { currentUrl, userData } = await new Promise((resolve) => {
       chrome.storage.local.get(["currentUrl", "userData"], (result) => {
         resolve(result);
       });
@@ -170,13 +170,13 @@ async function handlePageUrlUpdated(message) {
   try {
     const pageUrl = message.url;
 
-    const loginUser = await new Promise((resolve) => {
-      chrome.storage.local.get(["loginUser"], (result) => {
-        resolve(result.loginUser);
+    const { loginUser, NON_MEMBER } = await new Promise((resolve) => {
+      chrome.storage.local.get(["loginUser", "NON_MEMBER"], (result) => {
+        resolve(result);
       });
     });
 
-    const userId = loginUser || "65cccdc51ecc1196b364a1c7";
+    const userId = loginUser || NON_MEMBER;
 
     const responseData = await sendUserDataToServer(userId, pageUrl);
 
