@@ -1,15 +1,19 @@
 chrome.runtime.onMessage.addListener((message) => {
   if (message.action === "executeDisplayComment") {
-    chrome.storage.local.get(["userData", "newComment"], (result) => {
-      const newComment = result.newComment;
-      const userData = result.userData;
+    chrome.storage.local.get(
+      ["userData", "newComment", "FORNT_SERVER_URL"],
+      (result) => {
+        const newComment = result.newComment;
+        const userData = result.userData;
+        const FORNT_SERVER_URL = result.FORNT_SERVER_URL;
 
-      displayCommentModal(newComment, userData);
-    });
+        displayCommentModal(newComment, userData, FORNT_SERVER_URL);
+      },
+    );
   }
 });
 
-function displayCommentModal(commentData, userData) {
+function displayCommentModal(commentData, userData, FORNT_SERVER_URL) {
   const shadow = document.createElement("div").attachShadow({ mode: "closed" });
 
   const icon = document.createElement("img");
@@ -30,7 +34,7 @@ function displayCommentModal(commentData, userData) {
 
   shadow.appendChild(icon);
 
-  const modal = createModal(commentData, userData);
+  const modal = createModal(commentData, userData, FORNT_SERVER_URL);
 
   modal.style.cssText = `
   position: absolute;
@@ -78,7 +82,7 @@ function displayCommentModal(commentData, userData) {
   document.body.appendChild(shadow);
 }
 
-function createModal(commentData, userData) {
+function createModal(commentData, userData, FORNT_SERVER_URL) {
   const modal = document.createElement("div");
   modal.classList.add("modal");
 
@@ -106,7 +110,7 @@ function createModal(commentData, userData) {
 
   const nextPageLink = document.createElement("a");
   nextPageLink.innerText = "댓글로 이동";
-  nextPageLink.href = `http://localhost:5173/comments/${commentData._id}`;
+  nextPageLink.href = `${FORNT_SERVER_URL}/comments/${commentData._id}`;
 
   nextPageLink.style.cssText = `
   display: block;
