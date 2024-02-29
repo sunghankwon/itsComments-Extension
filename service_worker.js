@@ -23,8 +23,14 @@ popAlarm();
 async function handleUpdateLoginUser(message) {
   const loginUser = message.user;
 
+  const FORNT_SERVER_URL = await new Promise((resolve) => {
+    chrome.storage.local.get(["FORNT_SERVER_URL"], (result) => {
+      resolve(result.FORNT_SERVER_URL);
+    });
+  });
+
   chrome.cookies.set({
-    url: "http://localhost:5173",
+    url: `${FORNT_SERVER_URL}`,
     name: "authToken",
     value: message.token,
     expirationDate: Math.floor(Date.now() / 1000 + 60 * 60),
@@ -75,6 +81,12 @@ async function handleSubmitForm(message) {
       });
     });
 
+    const SERVER_URL = await new Promise((resolve) => {
+      chrome.storage.local.get(["SERVER_URL"], (result) => {
+        resolve(result.SERVER_URL);
+      });
+    });
+
     const modifiedUrl = getModifiedUrl(currentUrl);
 
     const formData = new FormData();
@@ -91,13 +103,10 @@ async function handleSubmitForm(message) {
     formData.append("recipientEmail", message.data.recipientEmail);
     formData.append("screenshot", screenshot);
 
-    const response = await fetch(
-      "http://itscomments.ap-northeast-2.elasticbeanstalk.com/comments/new",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
+    const response = await fetch(`${SERVER_URL}/comments/new`, {
+      method: "POST",
+      body: formData,
+    });
 
     if (response.ok) {
       const responseData = await response.json();
@@ -132,7 +141,13 @@ async function handleSubmitForm(message) {
 
 async function sendUserDataToServer(userId, pageUrl) {
   try {
-    const serverEndpoint = `http://itscomments.ap-northeast-2.elasticbeanstalk.com/location?userId=${encodeURIComponent(userId)}&pageUrl=${encodeURIComponent(pageUrl)}`;
+    const SERVER_URL = await new Promise((resolve) => {
+      chrome.storage.local.get(["SERVER_URL"], (result) => {
+        resolve(result.SERVER_URL);
+      });
+    });
+
+    const serverEndpoint = `${SERVER_URL}/location?userId=${encodeURIComponent(userId)}&pageUrl=${encodeURIComponent(pageUrl)}`;
 
     const response = await fetch(serverEndpoint, {
       method: "GET",
@@ -186,7 +201,13 @@ async function handlePageUrlUpdated(message) {
 async function handleOpenCommentTab(message) {
   const commentId = message.commentId;
 
-  chrome.tabs.create({ url: `http://localhost:5173/comments/${commentId}` });
+  const FORNT_SERVER_URL = await new Promise((resolve) => {
+    chrome.storage.local.get(["FORNT_SERVER_URL"], (result) => {
+      resolve(result.FORNT_SERVER_URL);
+    });
+  });
+
+  chrome.tabs.create({ url: `${FORNT_SERVER_URL}/comments/${commentId}` });
 }
 
 async function popAlarm() {
@@ -204,8 +225,14 @@ async function popAlarm() {
 
   const friendsString = userFriends.map((friend) => friend._id).join(",");
 
+  const SERVER_URL = await new Promise((resolve) => {
+    chrome.storage.local.get(["SERVER_URL"], (result) => {
+      resolve(result.SERVER_URL);
+    });
+  });
+
   const eventSource = new EventSource(
-    `http://itscomments.ap-northeast-2.elasticbeanstalk.com/comments/comments-stream/${loginUser}?friends=${friendsString}`,
+    `${SERVER_URL}/comments/comments-stream/${loginUser}?friends=${friendsString}`,
   );
 
   eventSource.addEventListener("message", async (event) => {

@@ -1,13 +1,33 @@
-chrome.storage.local.get(["userDataUpdate"], (result) => {
-  const userDataUpdate = result.userDataUpdate;
-  const receivedComments = result.userDataUpdate.receivedComments;
-  const icon = userDataUpdate.icon;
-  const userId = userDataUpdate._id.toString();
+chrome.storage.local.get(
+  ["userDataUpdate", "SERVER_URL", "FORNT_SERVER_URL"],
+  async (result) => {
+    const userDataUpdate = result.userDataUpdate;
+    const receivedComments = result.userDataUpdate.receivedComments;
+    const icon = userDataUpdate.icon;
+    const userId = userDataUpdate._id.toString();
 
-  alarmModal(icon, receivedComments, userId, userDataUpdate);
-});
+    const SERVER_URL = result.SERVER_URL;
+    const FORNT_SERVER_URL = result.FORNT_SERVER_URL;
 
-function alarmModal(icon, receivedComments, userId, userDataUpdate) {
+    alarmModal(
+      icon,
+      receivedComments,
+      userId,
+      userDataUpdate,
+      SERVER_URL,
+      FORNT_SERVER_URL,
+    );
+  },
+);
+
+function alarmModal(
+  icon,
+  receivedComments,
+  userId,
+  userDataUpdate,
+  SERVER_URL,
+  FORNT_SERVER_URL,
+) {
   const shadowHost = document.createElement("div");
   shadowHost.style.cssText = `
     position: fixed;
@@ -173,7 +193,7 @@ function alarmModal(icon, receivedComments, userId, userDataUpdate) {
 
     const nextPageLink = document.createElement("a");
     nextPageLink.innerText = "댓글로 이동";
-    nextPageLink.href = `http://localhost:5173/comments/${comment._id}`;
+    nextPageLink.href = `${FORNT_SERVER_URL}/comments/${comment._id}`;
     nextPageLink.style.cssText = `
       color: #5f5f5f;
       text-decoration: none;
@@ -186,7 +206,7 @@ function alarmModal(icon, receivedComments, userId, userDataUpdate) {
 
     nextPageLink.addEventListener("click", async () => {
       const response = await fetch(
-        `http://itscomments.ap-northeast-2.elasticbeanstalk.com/comments/${comment._id}?userId=${userId}&action=removeReceviedComment`,
+        `${SERVER_URL}/comments/${comment._id}?userId=${userId}&action=removeReceviedComment`,
         {
           method: "DELETE",
         },

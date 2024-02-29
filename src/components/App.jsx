@@ -12,6 +12,11 @@ function App() {
   const { userData, setUserData } = useUserStore();
   const [loading, setLoading] = useState(true);
 
+  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+  const FORNT_SERVER_URL = import.meta.env.VITE_FORNT_SERVER_URL;
+
+  chrome.storage.local.set({ SERVER_URL, FORNT_SERVER_URL });
+
   useEffect(() => {
     const unSubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {

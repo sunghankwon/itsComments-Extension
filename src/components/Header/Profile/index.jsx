@@ -9,7 +9,7 @@ function Profile() {
   const { userData } = useUserStore();
 
   function openWebPage() {
-    chrome.tabs.create({ url: "http://localhost:5173" });
+    chrome.tabs.create({ url: import.meta.env.VITE_FORNT_SERVER_URL });
   }
 
   return (
