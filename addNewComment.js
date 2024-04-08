@@ -13,10 +13,10 @@ function displayMessage(parentElement, message) {
   showMessage.textContent = message;
 
   showMessage.style.cssText = `
-  color: red;
-  font-size: 14px;
-  margin-top: 8px;
-`;
+    color: red;
+    font-size: 14px;
+    margin-top: 8px;
+  `;
 
   parentElement.appendChild(showMessage);
 
@@ -84,6 +84,7 @@ function setModalStyle(shadowHost, modal, x, y) {
     flex-direction: column;
     justify-content: space-between;
     padding: 15px;
+    background: rgba(0, 0, 0, 0.6);
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
   `;
 
@@ -118,7 +119,7 @@ function handleMouseMove(event) {
   }
 }
 
-function openModal(x, y, userFriendsList, userEmail) {
+function openModal(x, y, userFriendsList, userEmail, userNickname) {
   removeElementsByClass("shadowHost");
 
   const shadowHost = document.createElement("div");
@@ -126,37 +127,44 @@ function openModal(x, y, userFriendsList, userEmail) {
   shadowHost.className = "shadowHost";
 
   const modal = document.createElement("form");
+  let emails = [];
+  const getEmails = () => emails;
+  const setEmails = (newEmails) => {
+    emails = newEmails;
+  };
 
   modal.setAttribute("name", "comment");
   modal.addEventListener("submit", function (event) {
-    handleSubmit(event, publicUsers, modal);
+    handleSubmit(event, publicUsers, modal, getEmails);
   });
 
-  const friendsDropdown = setFriendDropdownStyle();
-
-  const textarea = document.createElement("textarea");
-  textarea.style.cssText = `
+  const topContainer = document.createElement("div");
+  topContainer.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 10px;
-    box-sizing: border-box;
+    margin-bottom: 5px;
   `;
 
-  const emailInput = document.createElement("input");
-  emailInput.style.cssText = `
-    width: calc(100% - 22px);
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 10px;
+  const nicknameDisplay = document.createElement("div");
+  nicknameDisplay.textContent = userNickname;
+  nicknameDisplay.style.cssText = `
+    color: white;
+    font-size: 16px;
+    text-align: left;
   `;
 
   const allowPublic = document.createElement("select");
   allowPublic.className = "allow-public";
   allowPublic.style.cssText = `
-    margin-top: 10px
+    width: auto;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.6);
+    color: black;
   `;
 
   const option1 = document.createElement("option");
@@ -169,6 +177,20 @@ function openModal(x, y, userFriendsList, userEmail) {
 
   allowPublic.appendChild(option1);
   allowPublic.appendChild(option2);
+
+  const friendsDropdown = setFriendDropdownStyle();
+
+  const textarea = document.createElement("textarea");
+  textarea.style.cssText = `
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+  `;
 
   const publicUsers = [];
 
@@ -203,68 +225,176 @@ function openModal(x, y, userFriendsList, userEmail) {
       : "none";
   });
 
-  const addEmailButton = document.createElement("button");
+  const buttonContainer = document.createElement("div");
+  buttonContainer.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  `;
 
+  const addEmailButton = document.createElement("button");
+  addEmailButton.textContent = "✉︎";
   addEmailButton.style.cssText = `
-    background-color: #3498db;
+    flex-grow: 1;
+    background-color: #9575CD;
     color: white;
-    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 10px;
-    width: 100%;
+    font-size: 30px;
+    margin-right: 5px;
   `;
-
-  emailInput.setAttribute("type", "email");
-  emailInput.setAttribute("name", "email");
-  emailInput.placeholder = "이메일을 입력하세요";
-
-  addEmailButton.textContent = "이메일 추가";
 
   addEmailButton.addEventListener("click", function (event) {
     event.preventDefault();
-
-    const newEmailInput = document.createElement("input");
-    newEmailInput.setAttribute("type", "email");
-    newEmailInput.setAttribute("name", "email");
-    newEmailInput.placeholder = "이메일을 입력하세요";
-
-    newEmailInput.style.cssText = `
-      width: calc(100% - 22px);
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-top: 10px;
-    `;
-
-    modal.insertBefore(newEmailInput, emailInput.nextSibling);
+    createEmailModal(shadowHost, x, y, setEmails, getEmails);
   });
 
+  function createEmailModal(shadowHost, x, y, setEmails, getEmails) {
+    const emailModal = document.createElement("div");
+    emailModal.style.cssText = `
+      position: fixed;
+      left: ${x + 30}px;
+      top: ${y + 30}px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      z-index: 10000;
+      width: 220px;
+    `;
+
+    const mailList = getEmails();
+
+    if (mailList && mailList.length > 0) {
+      mailList.forEach((email) => {
+        const existingEmailInput = document.createElement("input");
+        existingEmailInput.type = "email";
+        existingEmailInput.value = email;
+        existingEmailInput.style.cssText = `
+          width: 200px;
+          padding: 5px;
+          margin-bottom: 10px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+          background-color: rgba(0, 0, 0, 0.9);
+          color: white;
+        `;
+        emailModal.insertBefore(existingEmailInput, emailModal.firstChild);
+      });
+    }
+
+    const emailInput = document.createElement("input");
+    emailInput.type = "email";
+    emailInput.placeholder = "이메일을 입력하세요";
+    emailInput.style.cssText = `
+      width: 200px;
+      padding: 5px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: white;
+    `;
+
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.style.cssText = `
+      display: flex;
+      justify-content: space-between;
+      padding-top: 10px;
+    `;
+
+    const addButton = document.createElement("button");
+    addButton.textContent = "추가";
+    addButton.style.cssText = `
+      flex: 1;
+      padding: 5px;
+      background-color: #9575CD;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-right: 30px;
+    `;
+
+    addButton.addEventListener("click", function () {
+      const newEmailInput = emailInput.cloneNode();
+      newEmailInput.value = "";
+      emailModal.insertBefore(newEmailInput, buttonsContainer);
+    });
+
+    const saveButton = document.createElement("button");
+    saveButton.textContent = "저장";
+    saveButton.style.cssText = `
+      flex: 1;
+      padding: 3px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-right: 5px;
+    `;
+
+    saveButton.addEventListener("click", function () {
+      const emailElements = emailModal.querySelectorAll("input[type='email']");
+      const mailArray = Array.from(emailElements).map((input) => input.value);
+
+      setEmails(mailArray);
+
+      emailModal.remove();
+    });
+
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "닫기";
+    closeButton.onclick = function () {
+      emailModal.remove();
+    };
+    closeButton.style.cssText = `
+      flex: 1;
+      padding: 3px;
+      background-color: #EF5350;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+     `;
+
+    emailModal.appendChild(emailInput);
+
+    buttonsContainer.appendChild(addButton);
+    buttonsContainer.appendChild(saveButton);
+    buttonsContainer.appendChild(closeButton);
+    emailModal.appendChild(buttonsContainer);
+    shadowHost.parentElement.appendChild(emailModal);
+  }
+
   const submitButton = document.createElement("button");
+  submitButton.textContent = "작성";
   submitButton.style.cssText = `
+    flex-grow: 1;
     background-color: #3498db;
     color: white;
-    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 100%;
-    margin-top: 10px;
+    margin-right: 5px;
   `;
-  submitButton.textContent = "전송";
 
   const closeButton = document.createElement("button");
   closeButton.textContent = "닫기";
   closeButton.style.cssText = `
+    flex-grow: 1;
     background-color: #e74c3c;
     color: white;
-    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 100%;
-    margin-top: 10px;
   `;
 
   closeButton.addEventListener("click", function (event) {
@@ -276,18 +406,22 @@ function openModal(x, y, userFriendsList, userEmail) {
 
   if (userEmail === "itscomments16@gmail.com") {
     friendsDropdown.style.display = "none";
-    emailInput.style.display = "none";
     allowPublic.style.display = "none";
     addEmailButton.style.display = "none";
   }
 
+  topContainer.appendChild(nicknameDisplay);
+  topContainer.appendChild(allowPublic);
+
+  modal.appendChild(topContainer);
   modal.appendChild(textarea);
   modal.appendChild(friendsDropdown);
-  modal.appendChild(emailInput);
-  modal.appendChild(addEmailButton);
-  modal.appendChild(allowPublic);
-  modal.appendChild(submitButton);
-  modal.appendChild(closeButton);
+
+  buttonContainer.appendChild(addEmailButton);
+  buttonContainer.appendChild(submitButton);
+  buttonContainer.appendChild(closeButton);
+
+  modal.appendChild(buttonContainer);
 
   shadowRoot.appendChild(modal);
 
@@ -300,16 +434,13 @@ function openModal(x, y, userFriendsList, userEmail) {
   return modal;
 }
 
-function handleSubmit(event, publicUsers, modal) {
+function handleSubmit(event, publicUsers, modal, getEmails) {
   event.preventDefault();
 
   const shadowHostElements = document.body.getElementsByClassName("shadowHost");
   const textareaElement = event.target.querySelector("textarea");
   const allowPublic = event.target.getElementsByClassName("allow-public");
-  const emailElements = event.target.querySelectorAll("input[name='email']");
-  const recipientEmail = Array.from(emailElements).map(
-    (emailInput) => emailInput.value,
-  );
+  const recipientEmail = getEmails();
 
   const shadowHostElement = shadowHostElements[0];
 
@@ -363,10 +494,11 @@ document.addEventListener(
     chrome.storage.local.get(["userData", "userFriends"], (result) => {
       const userFriendsList = result.userFriends;
       const userEmail = result.userData.email;
+      const userNickname = result.userData.nickname;
       const offsetX = event.pageX;
       const offsetY = event.pageY;
 
-      openModal(offsetX, offsetY, userFriendsList, userEmail);
+      openModal(offsetX, offsetY, userFriendsList, userEmail, userNickname);
     });
   },
   { once: true },
