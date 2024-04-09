@@ -282,6 +282,7 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
           background-color: rgba(0, 0, 0, 0.9);
           color: white;
         `;
+
         emailModal.insertBefore(existingEmailInput, emailModal.firstChild);
       });
     }
@@ -363,7 +364,7 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
       border-radius: 5px;
       cursor: pointer;
       margin-top: 10px;
-     `;
+    `;
 
     emailModal.appendChild(emailInput);
 
