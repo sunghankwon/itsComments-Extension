@@ -2,7 +2,7 @@ chrome.storage.local.get(
   ["userDataUpdate", "SERVER_URL", "CLIENT_URL"],
   async (result) => {
     const userDataUpdate = result.userDataUpdate;
-    const receivedComments = result.userDataUpdate.receivedComments;
+    const feedComments = result.userDataUpdate.feedComments;
     const icon = userDataUpdate.icon;
     const userId = userDataUpdate._id.toString();
 
@@ -11,7 +11,7 @@ chrome.storage.local.get(
 
     alarmModal(
       icon,
-      receivedComments,
+      feedComments,
       userId,
       userDataUpdate,
       SERVER_URL,
@@ -22,7 +22,7 @@ chrome.storage.local.get(
 
 function alarmModal(
   icon,
-  receivedComments,
+  feedComments,
   userId,
   userDataUpdate,
   SERVER_URL,
@@ -121,7 +121,7 @@ function alarmModal(
     toggleComment.style.backgroundColor = "#27ae60";
   });
 
-  const COMMENT_COUNT = receivedComments.length;
+  const COMMENT_COUNT = feedComments.length;
   const commentCount = document.createElement("div");
   commentCount.innerText = COMMENT_COUNT;
   commentCount.style.cssText = `
@@ -137,7 +137,7 @@ function alarmModal(
   modalContainer.appendChild(toggleComment);
   modalContainer.appendChild(closeButton);
 
-  [...receivedComments].reverse().forEach((comment) => {
+  [...feedComments].reverse().forEach((comment) => {
     const userComment = document.createElement("div");
     userComment.className = "userComment";
     userComment.style.cssText = `
@@ -215,14 +215,14 @@ function alarmModal(
       if (response.ok) {
         modalContainer.removeChild(userComment);
 
-        const indexToRemove = receivedComments.findIndex(
-          (receivedComment) => receivedComment._id === comment._id,
+        const indexToRemove = feedComments.findIndex(
+          (feedComment) => feedComment._id === comment._id,
         );
 
         if (indexToRemove !== -1) {
-          userDataUpdate.receivedComments.splice(indexToRemove, 1);
+          userDataUpdate.feedComments.splice(indexToRemove, 1);
 
-          commentCount.innerText = userDataUpdate.receivedComments.length;
+          commentCount.innerText = userDataUpdate.feedComments.length;
 
           await chrome.storage.local.set({ userDataUpdate });
         }

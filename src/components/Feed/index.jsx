@@ -37,9 +37,9 @@ function Feed() {
   }
 
   useEffect(() => {
-    const receivedComments = userData.receivedComments;
+    const feedComments = userData.feedComments;
 
-    setCommentsList(receivedComments);
+    setCommentsList(feedComments);
   }, []);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function Feed() {
       if (message.action === "userUpdate") {
         const userDataUpdate = message.userDataUpdate;
 
-        setCommentsList(userDataUpdate.receivedComments);
+        setCommentsList(userDataUpdate.feedComments);
       }
     });
   }, [setCommentsList]);
