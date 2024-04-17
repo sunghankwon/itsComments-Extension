@@ -1,5 +1,5 @@
 chrome.storage.local.get(
-  ["userDataUpdate", "SERVER_URL", "FORNT_SERVER_URL"],
+  ["userDataUpdate", "SERVER_URL", "CLIENT_URL"],
   async (result) => {
     const userDataUpdate = result.userDataUpdate;
     const receivedComments = result.userDataUpdate.receivedComments;
@@ -7,7 +7,7 @@ chrome.storage.local.get(
     const userId = userDataUpdate._id.toString();
 
     const SERVER_URL = result.SERVER_URL;
-    const FORNT_SERVER_URL = result.FORNT_SERVER_URL;
+    const CLIENT_URL = result.CLIENT_URL;
 
     alarmModal(
       icon,
@@ -15,7 +15,7 @@ chrome.storage.local.get(
       userId,
       userDataUpdate,
       SERVER_URL,
-      FORNT_SERVER_URL,
+      CLIENT_URL,
     );
   },
 );
@@ -26,7 +26,7 @@ function alarmModal(
   userId,
   userDataUpdate,
   SERVER_URL,
-  FORNT_SERVER_URL,
+  CLIENT_URL,
 ) {
   const shadowHost = document.createElement("div");
   shadowHost.style.cssText = `
@@ -193,7 +193,7 @@ function alarmModal(
 
     const nextPageLink = document.createElement("a");
     nextPageLink.innerText = "댓글로 이동";
-    nextPageLink.href = `${FORNT_SERVER_URL}/comments/${comment._id}`;
+    nextPageLink.href = `${CLIENT_URL}/comments/${comment._id}`;
     nextPageLink.style.cssText = `
       color: #5f5f5f;
       text-decoration: none;
