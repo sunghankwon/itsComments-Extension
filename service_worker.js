@@ -23,14 +23,14 @@ popAlarm();
 async function handleUpdateLoginUser(message) {
   const loginUser = message.user;
 
-  const FORNT_SERVER_URL = await new Promise((resolve) => {
-    chrome.storage.local.get(["FORNT_SERVER_URL"], (result) => {
-      resolve(result.FORNT_SERVER_URL);
+  const CLIENT_URL = await new Promise((resolve) => {
+    chrome.storage.local.get(["CLIENT_URL"], (result) => {
+      resolve(result.CLIENT_URL);
     });
   });
 
   chrome.cookies.set({
-    url: `${FORNT_SERVER_URL}`,
+    url: `${CLIENT_URL}`,
     name: "authToken",
     value: message.token,
     expirationDate: Math.floor(Date.now() / 1000 + 60 * 60),
@@ -170,8 +170,8 @@ async function handlePageUrlUpdated(message) {
   try {
     const pageUrl = message.url;
 
-    const { loginUser, NON_MEMBER } = await new Promise((resolve) => {
-      chrome.storage.local.get(["loginUser", "NON_MEMBER"], (result) => {
+    const { NON_MEMBER, loginUser } = await new Promise((resolve) => {
+      chrome.storage.local.get(["NON_MEMBER", "loginUser"], (result) => {
         resolve(result);
       });
     });
@@ -201,13 +201,13 @@ async function handlePageUrlUpdated(message) {
 async function handleOpenCommentTab(message) {
   const commentId = message.commentId;
 
-  const FORNT_SERVER_URL = await new Promise((resolve) => {
-    chrome.storage.local.get(["FORNT_SERVER_URL"], (result) => {
-      resolve(result.FORNT_SERVER_URL);
+  const CLIENT_URL = await new Promise((resolve) => {
+    chrome.storage.local.get(["CLIENT_URL"], (result) => {
+      resolve(result.CLIENT_URL);
     });
   });
 
-  chrome.tabs.create({ url: `${FORNT_SERVER_URL}/comments/${commentId}` });
+  chrome.tabs.create({ url: `${CLIENT_URL}/comments/${commentId}` });
 }
 
 async function popAlarm() {

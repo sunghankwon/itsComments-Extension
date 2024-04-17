@@ -498,7 +498,8 @@ document.addEventListener(
       const userNickname = result.userData.nickname;
       const offsetX = event.pageX;
       const offsetY = event.pageY;
-
+      console.log("친구가 누구니?", userFriendsList);
+      console.log("친구가 누구니?", result.userData.friends);
       openModal(offsetX, offsetY, userFriendsList, userEmail, userNickname);
     });
   },

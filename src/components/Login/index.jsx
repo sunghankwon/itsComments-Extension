@@ -6,6 +6,12 @@ import useUserStore from "../../store/userProfile";
 function Login() {
   const { setUserData } = useUserStore();
 
+  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+  const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
+  const NON_MEMBER = import.meta.env.VITE_NON_MEMBER_ID;
+
+  chrome.storage.local.set({ SERVER_URL, CLIENT_URL, NON_MEMBER });
+
   function getAuthToken() {
     return new Promise((resolve, reject) => {
       chrome.identity.getAuthToken({ interactive: true }, function (token) {
@@ -41,7 +47,7 @@ function Login() {
   }
 
   return (
-    <div className="w-full flex flex-col justify-center">
+    <div className="flex flex-col justify-center w-full">
       <div className="mt-6">
         <NewComment />
       </div>
@@ -50,7 +56,7 @@ function Login() {
         <p className="mt-2 text-4xl text-white">Its Comments! </p>
         <button
           onClick={handleLogin}
-          className="w-11/12 bg-blue-500 text-white px-4 py-2 mt-[30px] rounded hover:bg-blue-700"
+          className="w-11/12 bg-blue-500 text-white px-4 py-2 mt-[30px] mb-[100px] rounded hover:bg-blue-700"
         >
           Login with Google
         </button>

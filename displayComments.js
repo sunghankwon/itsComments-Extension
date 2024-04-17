@@ -25,19 +25,19 @@ chrome.runtime.onMessage.addListener(async (message) => {
   if (message.action === "sendDataToDisplayComments") {
     const receivedData = message.data;
 
-    const FORNT_SERVER_URL = await new Promise((resolve) => {
-      chrome.storage.local.get(["FORNT_SERVER_URL"], (result) => {
-        resolve(result.FORNT_SERVER_URL);
+    const CLIENT_URL = await new Promise((resolve) => {
+      chrome.storage.local.get(["CLIENT_URL"], (result) => {
+        resolve(result.CLIENT_URL);
       });
     });
 
     for (const commentData of receivedData) {
-      displayCommentModal(commentData, FORNT_SERVER_URL);
+      displayCommentModal(commentData, CLIENT_URL);
     }
   }
 });
 
-function displayCommentModal(commentData, FORNT_SERVER_URL) {
+function displayCommentModal(commentData, CLIENT_URL) {
   const shadowHost = document.createElement("div");
   const shadowRoot = shadowHost.attachShadow({ mode: "closed" });
 
@@ -57,7 +57,7 @@ function displayCommentModal(commentData, FORNT_SERVER_URL) {
 
   shadowRoot.appendChild(icon);
 
-  const modal = createModal(commentData, FORNT_SERVER_URL);
+  const modal = createModal(commentData, CLIENT_URL);
 
   shadowRoot.appendChild(modal);
 
@@ -94,7 +94,7 @@ function displayCommentModal(commentData, FORNT_SERVER_URL) {
   document.body.appendChild(shadowRoot);
 }
 
-function createModal(commentData, FORNT_SERVER_URL) {
+function createModal(commentData, CLIENT_URL) {
   const modal = document.createElement("div");
   modal.style.cssText = `
   display: none;
@@ -127,7 +127,7 @@ function createModal(commentData, FORNT_SERVER_URL) {
 
   const nextPageLink = createStyle("");
   nextPageLink.innerHTML = `
-    <a href="${FORNT_SERVER_URL}/comments/${commentData._id}"
+    <a href="${CLIENT_URL}/comments/${commentData._id}"
       style="
       display:
       block;
