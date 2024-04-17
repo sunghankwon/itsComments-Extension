@@ -1,19 +1,19 @@
 chrome.runtime.onMessage.addListener((message) => {
   if (message.action === "executeDisplayComment") {
     chrome.storage.local.get(
-      ["userData", "newComment", "FORNT_SERVER_URL"],
+      ["userData", "newComment", "CLIENT_URL"],
       (result) => {
         const newComment = result.newComment;
         const userData = result.userData;
-        const FORNT_SERVER_URL = result.FORNT_SERVER_URL;
+        const CLIENT_URL = result.CLIENT_URL;
 
-        displayCommentModal(newComment, userData, FORNT_SERVER_URL);
+        displayCommentModal(newComment, userData, CLIENT_URL);
       },
     );
   }
 });
 
-function displayCommentModal(commentData, userData, FORNT_SERVER_URL) {
+function displayCommentModal(commentData, userData, CLIENT_URL) {
   const shadow = document.createElement("div").attachShadow({ mode: "closed" });
 
   const icon = document.createElement("img");
@@ -34,7 +34,7 @@ function displayCommentModal(commentData, userData, FORNT_SERVER_URL) {
 
   shadow.appendChild(icon);
 
-  const modal = createModal(commentData, userData, FORNT_SERVER_URL);
+  const modal = createModal(commentData, userData, CLIENT_URL);
 
   modal.style.cssText = `
   position: absolute;
@@ -82,7 +82,7 @@ function displayCommentModal(commentData, userData, FORNT_SERVER_URL) {
   document.body.appendChild(shadow);
 }
 
-function createModal(commentData, userData, FORNT_SERVER_URL) {
+function createModal(commentData, userData, CLIENT_URL) {
   const modal = document.createElement("div");
   modal.classList.add("modal");
 
@@ -110,7 +110,7 @@ function createModal(commentData, userData, FORNT_SERVER_URL) {
 
   const nextPageLink = document.createElement("a");
   nextPageLink.innerText = "댓글로 이동";
-  nextPageLink.href = `${FORNT_SERVER_URL}/comments/${commentData._id}`;
+  nextPageLink.href = `${CLIENT_URL}/comments/${commentData._id}`;
 
   nextPageLink.style.cssText = `
   display: block;

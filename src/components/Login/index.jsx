@@ -41,7 +41,7 @@ function Login() {
   }
 
   return (
-    <div className="w-full flex flex-col justify-center">
+    <div className="flex flex-col justify-center w-full">
       <div className="mt-6">
         <NewComment />
       </div>
@@ -50,7 +50,7 @@ function Login() {
         <p className="mt-2 text-4xl text-white">Its Comments! </p>
         <button
           onClick={handleLogin}
-          className="w-11/12 bg-blue-500 text-white px-4 py-2 mt-[30px] rounded hover:bg-blue-700"
+          className="w-11/12 bg-blue-500 text-white px-4 py-2 mt-[30px] mb-[100px] rounded hover:bg-blue-700"
         >
           Login with Google
         </button>

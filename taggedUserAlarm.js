@@ -1,32 +1,32 @@
 chrome.storage.local.get(
-  ["userDataUpdate", "SERVER_URL", "FORNT_SERVER_URL"],
+  ["userDataUpdate", "SERVER_URL", "CLIENT_URL"],
   async (result) => {
     const userDataUpdate = result.userDataUpdate;
-    const receivedComments = result.userDataUpdate.receivedComments;
+    const feedComments = result.userDataUpdate.feedComments;
     const icon = userDataUpdate.icon;
     const userId = userDataUpdate._id.toString();
 
     const SERVER_URL = result.SERVER_URL;
-    const FORNT_SERVER_URL = result.FORNT_SERVER_URL;
+    const CLIENT_URL = result.CLIENT_URL;
 
     alarmModal(
       icon,
-      receivedComments,
+      feedComments,
       userId,
       userDataUpdate,
       SERVER_URL,
-      FORNT_SERVER_URL,
+      CLIENT_URL,
     );
   },
 );
 
 function alarmModal(
   icon,
-  receivedComments,
+  feedComments,
   userId,
   userDataUpdate,
   SERVER_URL,
-  FORNT_SERVER_URL,
+  CLIENT_URL,
 ) {
   const shadowHost = document.createElement("div");
   shadowHost.style.cssText = `
@@ -121,7 +121,7 @@ function alarmModal(
     toggleComment.style.backgroundColor = "#27ae60";
   });
 
-  const COMMENT_COUNT = receivedComments.length;
+  const COMMENT_COUNT = feedComments.length;
   const commentCount = document.createElement("div");
   commentCount.innerText = COMMENT_COUNT;
   commentCount.style.cssText = `
@@ -137,7 +137,7 @@ function alarmModal(
   modalContainer.appendChild(toggleComment);
   modalContainer.appendChild(closeButton);
 
-  [...receivedComments].reverse().forEach((comment) => {
+  [...feedComments].reverse().forEach((comment) => {
     const userComment = document.createElement("div");
     userComment.className = "userComment";
     userComment.style.cssText = `
@@ -193,7 +193,7 @@ function alarmModal(
 
     const nextPageLink = document.createElement("a");
     nextPageLink.innerText = "댓글로 이동";
-    nextPageLink.href = `${FORNT_SERVER_URL}/comments/${comment._id}`;
+    nextPageLink.href = `${CLIENT_URL}/comments/${comment._id}`;
     nextPageLink.style.cssText = `
       color: #5f5f5f;
       text-decoration: none;
@@ -215,14 +215,14 @@ function alarmModal(
       if (response.ok) {
         modalContainer.removeChild(userComment);
 
-        const indexToRemove = receivedComments.findIndex(
-          (receivedComment) => receivedComment._id === comment._id,
+        const indexToRemove = feedComments.findIndex(
+          (feedComment) => feedComment._id === comment._id,
         );
 
         if (indexToRemove !== -1) {
-          userDataUpdate.receivedComments.splice(indexToRemove, 1);
+          userDataUpdate.feedComments.splice(indexToRemove, 1);
 
-          commentCount.innerText = userDataUpdate.receivedComments.length;
+          commentCount.innerText = userDataUpdate.feedComments.length;
 
           await chrome.storage.local.set({ userDataUpdate });
         }
