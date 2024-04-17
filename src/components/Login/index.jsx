@@ -6,12 +6,6 @@ import useUserStore from "../../store/userProfile";
 function Login() {
   const { setUserData } = useUserStore();
 
-  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-  const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
-  const NON_MEMBER = import.meta.env.VITE_NON_MEMBER_ID;
-
-  chrome.storage.local.set({ SERVER_URL, CLIENT_URL, NON_MEMBER });
-
   function getAuthToken() {
     return new Promise((resolve, reject) => {
       chrome.identity.getAuthToken({ interactive: true }, function (token) {
