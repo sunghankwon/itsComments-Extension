@@ -29,11 +29,11 @@ function NewComment() {
     <section className="flex justify-center">
       <button
         onClick={handleOnClick}
-        className="rounded-xl mt-4 w-11/12 bg-gray-800 text-xl font-bold text-white hover:bg-gray-400"
+        className="w-11/12 mt-4 text-xl font-bold text-white bg-gray-800 rounded-xl hover:bg-gray-400"
       >
         Create Comment
         <br />
-        <span className="text-base">Command + Shift + Y</span>
+        <span className="text-base">Alt(Option) + D</span>
       </button>
     </section>
   );
