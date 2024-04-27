@@ -44,12 +44,10 @@ async function handleUpdateLoginUser(message) {
 async function handleAddNewComment(message) {
   const currentUrl = message.currentUrl;
   const userData = message.userData;
-  const userFriends = userData.friends;
 
   await chrome.storage.local.set({
     currentUrl,
     userData,
-    userFriends,
   });
 
   chrome.scripting.executeScript({
