@@ -16,6 +16,31 @@ chrome.runtime.sendMessage({
   url: getModifiedUrl(window.location.href),
 });
 
+(function (history) {
+  const pushState = history.pushState;
+  const replaceState = history.replaceState;
+
+  history.pushState = function (state) {
+    if (typeof history.onpushstate == "function") {
+      history.onpushstate({ state: state });
+    }
+    pushState.apply(history, arguments);
+    window.dispatchEvent(new Event("statechange"));
+  };
+
+  history.replaceState = function () {
+    replaceState.apply(history, arguments);
+    window.dispatchEvent(new Event("statechange"));
+  };
+})(window.history);
+
+window.addEventListener("statechange", function () {
+  chrome.runtime.sendMessage({
+    action: "pageUrlUpdated",
+    url: getModifiedUrl(window.location.href),
+  });
+});
+
 function getModifiedUrl(currentUrl) {
   const index = currentUrl.indexOf("?scroll=");
 
@@ -35,6 +60,14 @@ chrome.runtime.onMessage.addListener(async (message) => {
       });
     });
 
+    document.querySelectorAll(".comment-icon").forEach((host) => {
+      host.remove();
+    });
+
+    document.querySelectorAll(".comment-modal").forEach((host) => {
+      host.remove();
+    });
+
     for (const commentData of receivedData) {
       displayCommentModal(commentData, CLIENT_URL);
     }
@@ -46,6 +79,7 @@ function displayCommentModal(commentData, CLIENT_URL) {
   const shadowRoot = shadowHost.attachShadow({ mode: "closed" });
 
   const icon = document.createElement("img");
+  icon.classList.add("comment-icon");
   icon.src = `${commentData.creator.icon}`;
   icon.style.cssText = `
   position: absolute;
@@ -100,6 +134,7 @@ function displayCommentModal(commentData, CLIENT_URL) {
 
 function createModal(commentData, CLIENT_URL) {
   const modal = document.createElement("div");
+  modal.classList.add("comment-modal");
   modal.style.cssText = `
   display: none;
   position: absolute;
