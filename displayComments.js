@@ -105,7 +105,7 @@ function createModal(commentData, CLIENT_URL) {
   position: absolute;
   width: 300px;
   background: rgba(0, 0, 0, 0.9);
-  border: 1px solid #38d431;
+  border: 1px solid #3b82f6;
   border-radius: 10px;
   color: white;
   z-index: 9100;
@@ -138,7 +138,7 @@ function createModal(commentData, CLIENT_URL) {
       block;
       margin-top: 5px;
       margin-bottom: 5px;
-      color: #38d431;"
+      color: #3b82f6"
     >
       댓글로 이동
     </a>
