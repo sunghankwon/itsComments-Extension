@@ -58,9 +58,11 @@ function displayCommentModal(commentData, userData, CLIENT_URL) {
 
   shadow.appendChild(modal);
 
+  let isIconHovered = false;
   let isModalHovered = false;
 
   icon.addEventListener("mouseenter", () => {
+    isIconHovered = true;
     modal.style.display = "block";
   });
 
@@ -74,9 +76,16 @@ function displayCommentModal(commentData, userData, CLIENT_URL) {
     isModalHovered = true;
   });
 
-  modal.addEventListener("mouseleave", () => {
-    isModalHovered = false;
-    modal.style.display = "none";
+  document.addEventListener("mouseout", (e) => {
+    if (
+      !icon.contains(e.relatedTarget) &&
+      !modal.contains(e.relatedTarget) &&
+      (isIconHovered || isModalHovered)
+    ) {
+      isIconHovered = false;
+      isModalHovered = false;
+      modal.style.display = "none";
+    }
   });
 
   document.body.appendChild(shadow);
