@@ -173,7 +173,7 @@ function createModal(commentData, CLIENT_URL) {
       block;
       margin-top: 5px;
       margin-bottom: 5px;
-      color: #3b82f6"
+      color: #3b82f6;"
     >
       댓글로 이동
     </a>

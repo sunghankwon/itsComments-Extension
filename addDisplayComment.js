@@ -41,7 +41,7 @@ function displayCommentModal(commentData, userData, CLIENT_URL) {
   display: none;
   width: 300px;
   background: rgba(0, 0, 0, 0.9);
-  border: 1px solid #3b82f6
+  border: 1px solid #3b82f6;
   border-radius: 10px;
   color: white;
   z-index: 9100;
@@ -126,7 +126,7 @@ function createModal(commentData, userData, CLIENT_URL) {
   margin-top: 5px;
   margin-bottom: 5px;
   margin-left: 10px;
-  color: #3b82f6
+  color: #3b82f6;
 `;
 
   modal.appendChild(nextPageLink);
