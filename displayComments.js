@@ -1,9 +1,13 @@
 const scroll = new URLSearchParams(window.location.search).get("scroll");
 
 if (scroll) {
-  window.scrollTo({
-    top: scroll,
-    behavior: "smooth",
+  window.addEventListener("load", function () {
+    setTimeout(() => {
+      window.scrollTo({
+        top: parseInt(scroll, 10),
+        behavior: "smooth",
+      });
+    }, 300);
   });
 }
 
@@ -115,7 +119,8 @@ function createModal(commentData, CLIENT_URL) {
     ${style};
     margin-left: 10px;
     color: white;
-  `;
+    `;
+
     return elementStyle;
   };
 
