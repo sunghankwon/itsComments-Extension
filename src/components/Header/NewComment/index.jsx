@@ -33,7 +33,7 @@ function NewComment() {
       >
         Create Comment
         <br />
-        <span className="text-base">Alt(Option) + D</span>
+        <span className="text-base">Command + Shift + Y</span>
       </button>
     </section>
   );
