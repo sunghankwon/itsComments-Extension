@@ -121,6 +121,7 @@ function handleMouseMove(event) {
 
 function openModal(x, y, userFriendsList, userEmail, userNickname) {
   removeElementsByClass("shadowHost");
+  document.body.style.cursor = "auto";
 
   const shadowHost = document.createElement("div");
   const shadowRoot = shadowHost.attachShadow({ mode: "closed" });
@@ -137,6 +138,10 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
   modal.addEventListener("submit", function (event) {
     handleSubmit(event, publicUsers, modal, getEmails);
   });
+
+  document
+    .querySelectorAll(".custom-cursor")
+    .forEach((cursor) => cursor.remove());
 
   const topContainer = document.createElement("div");
   topContainer.style.cssText = `
@@ -180,6 +185,19 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
 
   const friendsDropdown = setFriendDropdownStyle();
 
+  if (userFriendsList.length === 0) {
+    friendsDropdown.style.display = "none";
+  } else {
+    userFriendsList.forEach((friend) => {
+      const friendOption = document.createElement("option");
+
+      friendOption.value = `${friend.nickname}`;
+      friendOption.text = friend.nickname;
+      friendsDropdown.appendChild(friendOption);
+      friendsDropdown.style.display = "none";
+    });
+  }
+
   const textarea = document.createElement("textarea");
   textarea.style.cssText = `
     width: 100%;
@@ -193,15 +211,6 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
   `;
 
   const publicUsers = [];
-
-  userFriendsList.forEach((friend) => {
-    const friendOption = document.createElement("option");
-
-    friendOption.value = `${friend.nickname}`;
-    friendOption.text = friend.nickname;
-    friendsDropdown.appendChild(friendOption);
-    friendsDropdown.style.display = "none";
-  });
 
   friendsDropdown.addEventListener("change", function (event) {
     const selectedFriend = event.target.value;
@@ -402,6 +411,7 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
     event.preventDefault();
 
     removeElementsByClass("shadowHost");
+    document.body.style.cursor = "auto";
     document.removeEventListener("mousemove", handleMouseMove);
   });
 
@@ -437,6 +447,7 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
 
 function handleSubmit(event, publicUsers, modal, getEmails) {
   event.preventDefault();
+  document.body.style.cursor = "auto";
 
   const shadowHostElements = document.body.getElementsByClassName("shadowHost");
   const textareaElement = event.target.querySelector("textarea");
@@ -492,8 +503,8 @@ function handleSubmit(event, publicUsers, modal, getEmails) {
 document.addEventListener(
   "click",
   function (event) {
-    chrome.storage.local.get(["userData", "userFriends"], (result) => {
-      const userFriendsList = result.userFriends;
+    chrome.storage.local.get(["userData"], (result) => {
+      const userFriendsList = result.userData.friends;
       const userEmail = result.userData.email;
       const userNickname = result.userData.nickname;
       const offsetX = event.pageX;

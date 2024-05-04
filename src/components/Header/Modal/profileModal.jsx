@@ -1,11 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
 import useUserStore from "../../../store/userProfile";
+import useFeedStore from "../../../store/useFeed";
 
 function ProfileModal({ onClose }) {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [nickname, setNickname] = useState("");
   const { userData, setUserData } = useUserStore();
+  const { commentsList } = useFeedStore();
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleFileChange = (event) => {
@@ -50,25 +52,24 @@ function ProfileModal({ onClose }) {
   };
 
   return (
-    <div className="bg-black opacity-90 fixed inset-0 flex items-center justify-center">
-      <div className="flex flex-col items-center w-[80%] h-[60%] border rounded-md bg-white p-4">
-        <form className="flex flex-col items-center space-y-6">
+    <div className="fixed inset-0 flex items-center justify-center bg-black opacity-90">
+      <div className="flex flex-col items-center w-[80%] min-h-56 border rounded-md bg-white p-4">
+        <form
+          className={`flex flex-col items-center ${
+            commentsList.length === 0 ? "space-y-3" : "space-y-6"
+          }`}
+        >
           <div className="shrink-0"></div>
-          <p>프로필 변경</p>
+          <p className={`${commentsList.length === 0 ? "mb-1" : "mb-2"}`}>
+            프로필 변경
+          </p>
           <label className="block">
             <span className="sr-only">Choose profile photo</span>
             <input
               type="file"
               accept="image/png"
               onChange={handleFileChange}
-              className="
-              block w-full text-sm text-slate-500
-              file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-violet-50 file:text-violet-700
-              hover:file:bg-violet-100
-            "
+              className="block w-full text-sm text-slate-500 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
             />
           </label>
           <label className="block">
@@ -77,24 +78,24 @@ function ProfileModal({ onClose }) {
               type="text"
               value={nickname}
               onChange={(event) => setNickname(event.target.value)}
-              className="
-              mt-1 px-4 py-2 border rounded-md
-              text-sm text-slate-500
-              focus:outline-none focus:ring focus:border-blue-500
-            "
+              className="px-2 py-1 mt-1 text-sm border rounded-md text-slate-500 focus:outline-none focus:ring focus:border-blue-500"
             />
           </label>
-          <p className="text-red-400">{errorMessage}</p>
-          <div className="flex flex-row space-x-4">
+          <p
+            className={`text-red-400 ${commentsList.length === 0 ? "mt-1" : "mt-2"}`}
+          >
+            {errorMessage}
+          </p>
+          <div className="flex flex-row space-x-2">
             <button
               onClick={handleUpload}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md"
+              className="px-2 py-1 text-white bg-blue-500 rounded-md"
             >
               Upload
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-pink-500 text-white rounded-md"
+              className="px-2 py-1 text-white bg-pink-500 rounded-md"
             >
               Close
             </button>

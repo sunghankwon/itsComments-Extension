@@ -40,6 +40,7 @@ function App() {
           console.log("Login error:", error);
         } finally {
           setLoading(false);
+          chrome.storage.local.set({ userData });
         }
       } else {
         setUserData(null);

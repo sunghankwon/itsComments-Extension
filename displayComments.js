@@ -1,15 +1,44 @@
 const scroll = new URLSearchParams(window.location.search).get("scroll");
 
 if (scroll) {
-  window.scrollTo({
-    top: scroll,
-    behavior: "smooth",
+  window.addEventListener("load", function () {
+    setTimeout(() => {
+      window.scrollTo({
+        top: parseInt(scroll, 10),
+        behavior: "smooth",
+      });
+    }, 300);
   });
 }
 
 chrome.runtime.sendMessage({
   action: "pageUrlUpdated",
   url: getModifiedUrl(window.location.href),
+});
+
+(function (history) {
+  const pushState = history.pushState;
+  const replaceState = history.replaceState;
+
+  history.pushState = function (state) {
+    if (typeof history.onpushstate == "function") {
+      history.onpushstate({ state: state });
+    }
+    pushState.apply(history, arguments);
+    window.dispatchEvent(new Event("statechange"));
+  };
+
+  history.replaceState = function () {
+    replaceState.apply(history, arguments);
+    window.dispatchEvent(new Event("statechange"));
+  };
+})(window.history);
+
+window.addEventListener("statechange", function () {
+  chrome.runtime.sendMessage({
+    action: "pageUrlUpdated",
+    url: getModifiedUrl(window.location.href),
+  });
 });
 
 function getModifiedUrl(currentUrl) {
@@ -31,6 +60,14 @@ chrome.runtime.onMessage.addListener(async (message) => {
       });
     });
 
+    document.querySelectorAll(".comment-icon").forEach((host) => {
+      host.remove();
+    });
+
+    document.querySelectorAll(".comment-modal").forEach((host) => {
+      host.remove();
+    });
+
     for (const commentData of receivedData) {
       displayCommentModal(commentData, CLIENT_URL);
     }
@@ -42,6 +79,7 @@ function displayCommentModal(commentData, CLIENT_URL) {
   const shadowRoot = shadowHost.attachShadow({ mode: "closed" });
 
   const icon = document.createElement("img");
+  icon.classList.add("comment-icon");
   icon.src = `${commentData.creator.icon}`;
   icon.style.cssText = `
   position: absolute;
@@ -96,12 +134,13 @@ function displayCommentModal(commentData, CLIENT_URL) {
 
 function createModal(commentData, CLIENT_URL) {
   const modal = document.createElement("div");
+  modal.classList.add("comment-modal");
   modal.style.cssText = `
   display: none;
   position: absolute;
   width: 300px;
   background: rgba(0, 0, 0, 0.9);
-  border: 1px solid #38d431;
+  border: 1px solid #3b82f6;
   border-radius: 10px;
   color: white;
   z-index: 9100;
@@ -115,7 +154,8 @@ function createModal(commentData, CLIENT_URL) {
     ${style};
     margin-left: 10px;
     color: white;
-  `;
+    `;
+
     return elementStyle;
   };
 
@@ -133,7 +173,7 @@ function createModal(commentData, CLIENT_URL) {
       block;
       margin-top: 5px;
       margin-bottom: 5px;
-      color: #38d431;"
+      color: #3b82f6;"
     >
       댓글로 이동
     </a>

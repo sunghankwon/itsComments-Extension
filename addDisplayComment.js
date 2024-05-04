@@ -41,7 +41,7 @@ function displayCommentModal(commentData, userData, CLIENT_URL) {
   display: none;
   width: 300px;
   background: rgba(0, 0, 0, 0.9);
-  border: 1px solid #38d431;
+  border: 1px solid #3b82f6;
   border-radius: 10px;
   color: white;
   z-index: 9100;
@@ -58,9 +58,11 @@ function displayCommentModal(commentData, userData, CLIENT_URL) {
 
   shadow.appendChild(modal);
 
+  let isIconHovered = false;
   let isModalHovered = false;
 
   icon.addEventListener("mouseenter", () => {
+    isIconHovered = true;
     modal.style.display = "block";
   });
 
@@ -74,9 +76,16 @@ function displayCommentModal(commentData, userData, CLIENT_URL) {
     isModalHovered = true;
   });
 
-  modal.addEventListener("mouseleave", () => {
-    isModalHovered = false;
-    modal.style.display = "none";
+  document.addEventListener("mouseout", (e) => {
+    if (
+      !icon.contains(e.relatedTarget) &&
+      !modal.contains(e.relatedTarget) &&
+      (isIconHovered || isModalHovered)
+    ) {
+      isIconHovered = false;
+      isModalHovered = false;
+      modal.style.display = "none";
+    }
   });
 
   document.body.appendChild(shadow);
@@ -117,7 +126,7 @@ function createModal(commentData, userData, CLIENT_URL) {
   margin-top: 5px;
   margin-bottom: 5px;
   margin-left: 10px;
-  color: #38d431;
+  color: #3b82f6;
 `;
 
   modal.appendChild(nextPageLink);
