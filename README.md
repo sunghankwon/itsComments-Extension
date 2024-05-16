@@ -41,7 +41,7 @@
   3. [url로 이동시 어떻게 댓글이 작성된 위치로 이동해줄까?](#3-url로-이동시-어떻게-댓글이-작성된-위치로-이동해줄수있을까)
 - [📑 Challenges](#📑-challenges)
   - [일관 되지 않은 스타일을 어떻게 처리할까?](#일관-되지-않은-스타일을-어떻게-처리할까)
-  - [해결방법: Shadow DOM 사용](#해결방법-shadow-dom-사용)
+  - [해결방법: Shadow DOM 적용](#해결방법-shadow-dom-적용)
   - [Shadow DOM의 closed 속성](#shadow-dom의-closed-속성)
 - [👨🏻‍🏫 Memoir](#👨🏻‍🏫-memoir)
 
