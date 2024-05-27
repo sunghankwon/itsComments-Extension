@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import useUserStore from "../../../store/userProfile";
 import useFeedStore from "../../../store/useFeed";
+import Resizer from "react-image-file-resizer";
 
 function ProfileModal({ onClose }) {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -12,10 +13,24 @@ function ProfileModal({ onClose }) {
 
   const handleFileChange = (event) => {
     const imageFile = event.target.files[0];
-    setSelectedImageFile(imageFile);
+    if (imageFile) {
+      Resizer.imageFileResizer(
+        imageFile,
+        300,
+        300,
+        "PNG",
+        90,
+        0,
+        (image) => {
+          setSelectedImageFile(image);
+        },
+        "blob",
+      );
+    }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (event) => {
+    event.preventDefault();
     try {
       if (!selectedImageFile && !nickname.trim()) {
         setErrorMessage("변경하려는 아이콘 이미지나 닉네임을 입력해주세요");
@@ -46,6 +61,7 @@ function ProfileModal({ onClose }) {
       );
 
       setUserData(response.data.user);
+      onClose();
     } catch (error) {
       console.error("Error uploading profile:", error.message);
     }
