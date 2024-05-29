@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener((message) => {
 popAlarm();
 
 async function handleUpdateLoginUser(message) {
-  const loginUser = message.user;
+  const userData = message.user;
 
   const CLIENT_URL = await new Promise((resolve) => {
     chrome.storage.local.get(["CLIENT_URL"], (result) => {
@@ -38,7 +38,7 @@ async function handleUpdateLoginUser(message) {
     httpOnly: false,
   });
 
-  await chrome.storage.local.set({ loginUser });
+  await chrome.storage.local.set({ userData });
 }
 
 async function handleAddNewComment(message) {
@@ -169,7 +169,7 @@ async function handlePageUrlUpdated(message) {
     const pageUrl = message.url;
 
     const { NON_MEMBER, loginUser } = await new Promise((resolve) => {
-      chrome.storage.local.get(["NON_MEMBER", "loginUser"], (result) => {
+      chrome.storage.local.get(["NON_MEMBER", "userData"], (result) => {
         resolve(result);
       });
     });
@@ -210,8 +210,8 @@ async function handleOpenCommentTab(message) {
 
 async function popAlarm() {
   const loginUser = await new Promise((resolve) => {
-    chrome.storage.local.get(["loginUser"], (result) => {
-      resolve(result.loginUser);
+    chrome.storage.local.get(["userData"], (result) => {
+      resolve(result.userData);
     });
   });
 
@@ -273,19 +273,35 @@ function getModifiedUrl(currentUrl) {
   return modifiedUrl;
 }
 
-chrome.commands.onCommand.addListener(() => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const activeTab = tabs[0];
-    const tabId = activeTab.id;
-    const currentUrl = activeTab.url;
-
-    chrome.storage.local.set({
-      currentUrl,
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === "addNewComment") {
+    const result = await new Promise((resolve) => {
+      chrome.storage.local.get(["userData"], resolve);
     });
 
-    chrome.scripting.executeScript({
-      target: { tabId },
-      files: ["addNewComment.js"],
-    });
-  });
+    if (result.userData) {
+      const tabs = await new Promise((resolve) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, resolve);
+      });
+
+      if (tabs.length > 0) {
+        const activeTab = tabs[0];
+        const tabId = activeTab.id;
+        const currentUrl = activeTab.url;
+
+        await chrome.storage.local.set({
+          currentUrl,
+        });
+
+        chrome.scripting.executeScript({
+          target: { tabId },
+          files: ["addNewComment.js"],
+        });
+      } else {
+        console.error("No active tab found.");
+      }
+    } else {
+      console.error("User data is not available.");
+    }
+  }
 });

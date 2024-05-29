@@ -33,14 +33,13 @@ function App() {
 
           chrome.runtime.sendMessage({
             action: "updateLoginUser",
-            user: res.data.user._id,
+            user: res.data.user,
             token: authToken,
           });
         } catch (error) {
           console.log("Login error:", error);
         } finally {
           setLoading(false);
-          chrome.storage.local.set({ userData });
         }
       } else {
         setUserData(null);
@@ -52,6 +51,12 @@ function App() {
       unSubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (userData) {
+      chrome.storage.local.set({ userData });
+    }
+  }, [userData]);
 
   return (
     <main

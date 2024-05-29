@@ -53,8 +53,8 @@ function createCustomCursor(x, y) {
   cursor.style.cssText = `
     cursor: crosshair;
     position: absolute;
-    left: ${x - 15}px;
-    top: ${y - 15}px;
+    left: ${x}px;
+    top: ${y}px;
     width: 30px;
     height: 30px;
     z-index: 1000;
@@ -106,7 +106,6 @@ function handleMouseMove(event) {
     if (existingCursor) {
       existingCursor.remove();
     }
-
     document.body.appendChild(cursor);
     document.body.style.cursor = "none";
   } else {
@@ -516,4 +515,6 @@ document.addEventListener(
   { once: true },
 );
 
-document.addEventListener("mousemove", handleMouseMove);
+document.addEventListener("mousemove", (event) => {
+  handleMouseMove(event);
+});
