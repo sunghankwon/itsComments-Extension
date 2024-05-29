@@ -96,26 +96,14 @@ function handleMouseMove(event) {
   const x = event.pageX;
   const y = event.pageY;
 
-  const cursor = createCustomCursor(x, y);
-
-  const isOverModal = document.querySelector(".shadowHost:hover");
-
-  if (!isOverModal) {
-    const existingCursor = document.querySelector(".custom-cursor");
-
-    if (existingCursor) {
-      existingCursor.remove();
-    }
-    document.body.appendChild(cursor);
-    document.body.style.cursor = "none";
-  } else {
-    const existingCursor = document.querySelector(".custom-cursor");
-    if (existingCursor) {
-      existingCursor.remove();
-    }
-
-    document.body.style.cursor = "auto";
+  const existingCursor = document.querySelector(".custom-cursor");
+  if (existingCursor) {
+    existingCursor.remove();
   }
+
+  const cursor = createCustomCursor(x, y);
+  document.body.appendChild(cursor);
+  document.body.style.cursor = "none";
 }
 
 function openModal(x, y, userFriendsList, userEmail, userNickname) {
@@ -515,6 +503,15 @@ document.addEventListener(
   { once: true },
 );
 
-document.addEventListener("mousemove", (event) => {
-  handleMouseMove(event);
-});
+function handleMouseClick() {
+  const existingCursor = document.querySelector(".custom-cursor");
+  if (existingCursor) {
+    existingCursor.remove();
+    document.body.style.cursor = "auto";
+  }
+
+  document.removeEventListener("mousemove", handleMouseMove);
+}
+
+document.addEventListener("mousemove", handleMouseMove);
+document.addEventListener("click", handleMouseClick, { once: true });
