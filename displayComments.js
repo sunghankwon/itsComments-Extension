@@ -2,12 +2,24 @@ const scroll = new URLSearchParams(window.location.search).get("scroll");
 
 if (scroll) {
   window.addEventListener("load", function () {
-    setTimeout(() => {
+    const targetPosition = parseInt(scroll, 10);
+
+    function scrollToPosition(attempt = 1) {
       window.scrollTo({
-        top: parseInt(scroll, 10),
+        top: targetPosition,
         behavior: "smooth",
       });
-    }, 300);
+
+      setTimeout(() => {
+        const actualPosition = window.scrollY;
+
+        if (Math.abs(actualPosition - targetPosition) > 100 && attempt < 2) {
+          scrollToPosition(attempt + 1);
+        }
+      }, 1000);
+    }
+
+    scrollToPosition();
   });
 }
 
