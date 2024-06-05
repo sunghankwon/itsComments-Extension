@@ -428,9 +428,7 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
   document.body.appendChild(shadowHost);
 
   modal.focus();
-  setTimeout(() => {
-    textarea.focus();
-  }, 0);
+  textarea.focus();
 
   shadowHost.addEventListener("click", (event) => event.stopPropagation());
   shadowRoot.addEventListener("click", (event) => event.stopPropagation());
