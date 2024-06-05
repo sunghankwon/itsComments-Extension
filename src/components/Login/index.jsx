@@ -1,7 +1,11 @@
 import axios from "axios";
-import { auth, GoogleAuthProvider } from "../../utils/firebase";
+import { auth } from "../../utils/firebase";
 import NewComment from "../Header/NewComment";
 import useUserStore from "../../store/userProfile";
+import {
+  signInWithCredential,
+  GoogleAuthProvider as FirebaseGoogleAuthProvider,
+} from "firebase/auth";
 
 function Login() {
   const { setUserData } = useUserStore();
@@ -21,8 +25,8 @@ function Login() {
   async function handleLogin() {
     try {
       const token = await getAuthToken();
-      const credential = GoogleAuthProvider.credential(null, token);
-      const userCredential = await auth.signInWithCredential(credential);
+      const credential = FirebaseGoogleAuthProvider.credential(null, token);
+      const userCredential = await signInWithCredential(auth, credential);
 
       if (userCredential) {
         const res = await axios.post(
