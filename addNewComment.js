@@ -428,6 +428,20 @@ function openModal(x, y, userFriendsList, userEmail, userNickname) {
   document.body.appendChild(shadowHost);
 
   modal.focus();
+  setTimeout(() => {
+    textarea.focus();
+  }, 0);
+
+  shadowHost.addEventListener("click", (event) => event.stopPropagation());
+  shadowRoot.addEventListener("click", (event) => event.stopPropagation());
+  modal.addEventListener("click", (event) => event.stopPropagation());
+  modal.addEventListener("keydown", (event) => {
+    event.stopPropagation();
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      modal.dispatchEvent(new Event("submit"));
+    }
+  });
 
   return modal;
 }
@@ -490,6 +504,8 @@ function handleSubmit(event, publicUsers, modal, getEmails) {
 document.addEventListener(
   "click",
   function (event) {
+    event.stopPropagation();
+    event.preventDefault();
     chrome.storage.local.get(["userData"], (result) => {
       const userFriendsList = result.userData.friends;
       const userEmail = result.userData.email;
