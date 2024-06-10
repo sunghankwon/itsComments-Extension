@@ -1,11 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Toggle() {
   const [isActive, setIsActive] = useState(true);
 
+  useEffect(() => {
+    chrome.storage.local.get(["isActive"], (result) => {
+      if (result.isActive !== undefined) {
+        setIsActive(result.isActive);
+      }
+    });
+  }, []);
+
   function activeComments() {
     const newActiveState = !isActive;
     setIsActive(newActiveState);
+
+    chrome.storage.local.set({ isActive: newActiveState });
+
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        chrome.tabs.reload(tabs[0].id);
+      }
+    });
   }
 
   return (
