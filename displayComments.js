@@ -29,32 +29,32 @@ chrome.storage.local.get(["isActive"], (result) => {
       action: "pageUrlUpdated",
       url: getModifiedUrl(window.location.href),
     });
+
+    (function (history) {
+      const pushState = history.pushState;
+      const replaceState = history.replaceState;
+
+      history.pushState = function (state) {
+        if (typeof history.onpushstate == "function") {
+          history.onpushstate({ state: state });
+        }
+        pushState.apply(history, arguments);
+        window.dispatchEvent(new Event("statechange"));
+      };
+
+      history.replaceState = function () {
+        replaceState.apply(history, arguments);
+        window.dispatchEvent(new Event("statechange"));
+      };
+    })(window.history);
+
+    window.addEventListener("statechange", function () {
+      chrome.runtime.sendMessage({
+        action: "pageUrlUpdated",
+        url: getModifiedUrl(window.location.href),
+      });
+    });
   }
-});
-
-(function (history) {
-  const pushState = history.pushState;
-  const replaceState = history.replaceState;
-
-  history.pushState = function (state) {
-    if (typeof history.onpushstate == "function") {
-      history.onpushstate({ state: state });
-    }
-    pushState.apply(history, arguments);
-    window.dispatchEvent(new Event("statechange"));
-  };
-
-  history.replaceState = function () {
-    replaceState.apply(history, arguments);
-    window.dispatchEvent(new Event("statechange"));
-  };
-})(window.history);
-
-window.addEventListener("statechange", function () {
-  chrome.runtime.sendMessage({
-    action: "pageUrlUpdated",
-    url: getModifiedUrl(window.location.href),
-  });
 });
 
 function getModifiedUrl(currentUrl) {
