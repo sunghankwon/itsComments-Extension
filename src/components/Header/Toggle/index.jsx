@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 function Toggle() {
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     chrome.storage.local.get(["isActive"], (result) => {
