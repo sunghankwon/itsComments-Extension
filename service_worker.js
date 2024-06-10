@@ -60,7 +60,7 @@ async function handleSubmitForm(message) {
   try {
     const imageDataUrl = await new Promise((resolve) => {
       chrome.tabs.captureVisibleTab(
-        { format: "png", quality: 90 },
+        { format: "jpeg", quality: 50 },
         (imageUrl) => {
           resolve(imageUrl);
         },
