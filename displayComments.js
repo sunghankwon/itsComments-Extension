@@ -23,9 +23,13 @@ if (scroll) {
   });
 }
 
-chrome.runtime.sendMessage({
-  action: "pageUrlUpdated",
-  url: getModifiedUrl(window.location.href),
+chrome.storage.local.get(["isActive"], (result) => {
+  if (result.isActive === true) {
+    chrome.runtime.sendMessage({
+      action: "pageUrlUpdated",
+      url: getModifiedUrl(window.location.href),
+    });
+  }
 });
 
 (function (history) {
