@@ -1,71 +1,16 @@
-import { useState } from "react";
-import axios from "axios";
-import useUserStore from "../../../store/userProfile";
 import useFeedStore from "../../../store/useFeed";
-import Resizer from "react-image-file-resizer";
+import handleFileChange from "../../../utils/handleFileChange";
+import useProfileUpdate from "../../../apis/useProfileUpdate";
 
 function ProfileModal({ onClose }) {
-  const [selectedImageFile, setSelectedImageFile] = useState(null);
-  const [nickname, setNickname] = useState("");
-  const { userData, setUserData } = useUserStore();
+  const {
+    setSelectedImageFile,
+    nickname,
+    setNickname,
+    errorMessage,
+    handleUpload,
+  } = useProfileUpdate(onClose);
   const { commentsList } = useFeedStore();
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleFileChange = (event) => {
-    const imageFile = event.target.files[0];
-    if (imageFile) {
-      Resizer.imageFileResizer(
-        imageFile,
-        300,
-        300,
-        "PNG",
-        90,
-        0,
-        (image) => {
-          setSelectedImageFile(image);
-        },
-        "blob",
-      );
-    }
-  };
-
-  const handleUpload = async (event) => {
-    event.preventDefault();
-    try {
-      if (!selectedImageFile && !nickname.trim()) {
-        setErrorMessage("변경하려는 아이콘 이미지나 닉네임을 입력해주세요");
-        return;
-      }
-
-      if (
-        nickname.trim() &&
-        (nickname.trim().length < 2 || nickname.trim().length > 20)
-      ) {
-        setErrorMessage("닉네임은 2글자 초과 20자 미만으로 입력해주세요.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("profileIcon", selectedImageFile);
-      formData.append("nickname", nickname);
-      formData.append("userId", userData._id);
-
-      const response = await axios.patch(
-        `${import.meta.env.VITE_SERVER_URL}/profile`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        },
-      );
-
-      setUserData(response.data.user);
-      onClose();
-    } catch (error) {
-      console.error("Error uploading profile:", error.message);
-    }
-  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black opacity-90">
@@ -84,7 +29,9 @@ function ProfileModal({ onClose }) {
             <input
               type="file"
               accept="image/png"
-              onChange={handleFileChange}
+              onChange={(event) =>
+                handleFileChange(event, setSelectedImageFile)
+              }
               className="block w-full text-sm text-slate-500 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
             />
           </label>
