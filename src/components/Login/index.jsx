@@ -1,48 +1,8 @@
-import axios from "axios";
-import { auth } from "../../utils/firebase";
 import NewComment from "../Header/NewComment";
-import useUserStore from "../../store/userProfile";
-import {
-  signInWithCredential,
-  GoogleAuthProvider as FirebaseGoogleAuthProvider,
-} from "firebase/auth";
+import useGoogleSignIn from "../../apis/useGoogleSignIn";
 
 function Login() {
-  const { setUserData } = useUserStore();
-
-  function getAuthToken() {
-    return new Promise((resolve, reject) => {
-      chrome.identity.getAuthToken({ interactive: true }, function (token) {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(token);
-        }
-      });
-    });
-  }
-
-  async function handleLogin() {
-    try {
-      const token = await getAuthToken();
-      const credential = FirebaseGoogleAuthProvider.credential(null, token);
-      const userCredential = await signInWithCredential(auth, credential);
-
-      if (userCredential) {
-        const res = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/login`,
-          { user: userCredential.user },
-          { withCredentials: true },
-        );
-
-        const user = res.data.user;
-
-        setUserData(user);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
+  const handleLogin = useGoogleSignIn();
 
   return (
     <div className="flex flex-col justify-center w-full">
