@@ -52,7 +52,7 @@ async function handleAddNewComment(message) {
 
   chrome.scripting.executeScript({
     target: { tabId: message.tabId },
-    files: ["addNewComment.js"],
+    files: ["src/contents/addNewComment.js"],
   });
 }
 
@@ -122,7 +122,7 @@ async function handleSubmitForm(message) {
         chrome.scripting.executeScript(
           {
             target: { tabId },
-            files: ["addDisplayComment.js"],
+            files: ["src/contents/addDisplayComment.js"],
           },
           () => {
             chrome.tabs.sendMessage(tabId, { action: "executeDisplayComment" });
@@ -248,7 +248,7 @@ async function popAlarm() {
 
         chrome.scripting.executeScript({
           target: { tabId },
-          files: ["taggedUserAlarm.js"],
+          files: ["src/contents/taggedUserAlarm.js"],
         });
 
         chrome.runtime.sendMessage({
@@ -295,7 +295,7 @@ chrome.commands.onCommand.addListener(async (command) => {
 
         chrome.scripting.executeScript({
           target: { tabId },
-          files: ["addNewComment.js"],
+          files: ["src/contents/addNewComment.js"],
         });
       } else {
         console.error("No active tab found.");
