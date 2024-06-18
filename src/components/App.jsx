@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { auth } from "../utils/firebase";
-import axios from "axios";
+import { useState } from "react";
+import useAutoLogin from "../apis/useAutoLogin";
 
 import Login from "./Login";
 import Header from "./Header/Header";
@@ -18,45 +17,7 @@ function App() {
 
   chrome.storage.local.set({ SERVER_URL, CLIENT_URL, NON_MEMBER });
 
-  useEffect(() => {
-    const unSubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        try {
-          const authToken = await user.getIdToken(true);
-          const res = await axios.post(
-            `${import.meta.env.VITE_SERVER_URL}/login`,
-            { user },
-            { withCredentials: true },
-          );
-
-          setUserData(res.data.user);
-
-          chrome.runtime.sendMessage({
-            action: "updateLoginUser",
-            user: res.data.user,
-            token: authToken,
-          });
-        } catch (error) {
-          console.log("Login error:", error);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setUserData(null);
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      unSubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (userData) {
-      chrome.storage.local.set({ userData });
-    }
-  }, [userData]);
+  useAutoLogin(setUserData, setLoading);
 
   return (
     <main
